@@ -7,16 +7,14 @@ library(tidytext)
 library(RColorBrewer)
 library(stringr)
 
-
 theme_set(theme_bw())
 # color-blind-friendly palette
 cbPalette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7") 
 
-
-# 1. Data ----
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 source("helpers.R")
 
+# 1. Data ----
 ## Comprehension ----
 comprehension.gpt4o.data <- read.csv("../../data/comprehension-gpt-4o_annotate.csv", header=TRUE) %>% 
   na.omit()
@@ -34,6 +32,36 @@ comprehension_data <- bind_rows(lst(comprehension.gpt4o.data, comprehension.gpt4
   select(model, sentence_type, explanation, item_id)
 
 comprehension_means <- comprehension_data %>% 
+  mutate(explanation_numerical = ifelse(explanation=="no", 0, 1)) %>% 
+  group_by(model, sentence_type) %>% 
+  summarize(Mean = mean(explanation_numerical),
+            CILow = ci.low(explanation_numerical),
+            CIHigh = ci.high(explanation_numerical)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh)
+
+
+## Comprehension alternative prompt ----
+comprehension_alt.gpt4o.data <- read.csv("../../data/comprehension_alt-gpt-4o.csv", header=TRUE) %>% 
+  na.omit() %>% 
+  mutate(explanation = ifelse(grepl("Yes", answer, ignore.case = TRUE), "yes", "no"))
+comprehension_alt.gpt4.data <- read.csv("../../data/comprehension_alt-gpt-4.csv", header=TRUE) %>% 
+  na.omit() %>% 
+  mutate(explanation = ifelse(grepl("Yes", answer, ignore.case = TRUE), "yes", "no"))
+comprehension_alt.gpt35.data <- read.csv("../../data/comprehension_alt-gpt-3.5-turbo.csv", header=TRUE) %>% 
+  na.omit() %>% 
+  mutate(explanation = ifelse(grepl("Yes", answer, ignore.case = TRUE), "yes", "no"))
+
+comprehension_alt_data <- bind_rows(lst(comprehension_alt.gpt4o.data, comprehension_alt.gpt4.data, comprehension_alt.gpt35.data), .id="model") %>% 
+  filter(verb_type %in% c("IC_High", "nonIC_High")) %>% 
+  mutate(model = case_when(model == "comprehension_alt.gpt4o.data" ~ "gpt-4o",
+                           model == "comprehension_alt.gpt35.data" ~ "gpt-3.5-turbo",
+                           model == "comprehension_alt.gpt4.data" ~ "gpt-4"),
+         explanation = if_else(explanation == "no", "no", "yes")) %>% 
+  select(model, sentence_type, explanation, item_id)
+
+comprehension_alt_means <- comprehension_alt_data %>% 
   mutate(explanation_numerical = ifelse(explanation=="no", 0, 1)) %>% 
   group_by(model, sentence_type) %>% 
   summarize(Mean = mean(explanation_numerical),
@@ -95,7 +123,6 @@ comprehension_rc_mean <- comprehension_rc_data %>%
   ungroup() %>% 
   mutate(YMin = Mean-CILow,
          YMax = Mean+CIHigh)
-  
 
 comprehension_rc_verb_mean <- comprehension_rc_data %>% 
   mutate(attachment_numerical = ifelse(attachment=="high", 1, 0),
@@ -107,8 +134,67 @@ comprehension_rc_verb_mean <- comprehension_rc_data %>%
   ungroup() %>% 
   mutate(YMin = Mean-CILow,
          YMax = Mean+CIHigh)
-  
 
+exp_rc_verb_data <- merge(comprehension_data, rc_data, by=c("model","item_id","sentence_type")) %>% 
+  mutate(rc_verb_group = case_when(sentence_type == "IC" & attachment == "low" ~ "IC\n-low",
+                                    sentence_type == "IC" & attachment == "high" ~ "IC\n-high",
+                                    sentence_type == "nonIC" & attachment == "low" ~ "nonIC\n-low",
+                                    sentence_type == "nonIC" & attachment == "high" ~ "nonIC\n-high"))
+
+exp_rc_verb_mean <- exp_rc_verb_data %>% 
+  mutate(explanation_numerical = ifelse(explanation=="yes", 1, 0)) %>%
+  group_by(model, rc_verb_group) %>% 
+  summarize(Mean = mean(explanation_numerical),
+            CILow = ci.low(explanation_numerical),
+            CIHigh = ci.high(explanation_numerical)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh)
+
+## combined with comp. alt ----
+comp_alt_rc_data <- merge(comprehension_alt_data, rc_data, by=c("model","item_id","sentence_type")) %>%
+  mutate(exp_verb_group = case_when(sentence_type == "IC" & explanation == "yes" ~ "IC\n-exp",
+                                    sentence_type == "IC" & explanation == "no" ~ "IC\n-nonexp",
+                                    sentence_type == "nonIC" & explanation == "yes" ~ "nonIC\n-exp",
+                                    sentence_type == "nonIC" & explanation == "no" ~ "nonIC\n-nonexp"))
+
+comp_alt_rc_mean <- comp_alt_rc_data %>% 
+  mutate(attachment_numerical = ifelse(attachment=="high", 1, 0),
+         explanation = ifelse(explanation == "yes", "exp", "non-exp")) %>%
+  group_by(model, explanation) %>% 
+  summarize(Mean = mean(attachment_numerical),
+            CILow = ci.low(attachment_numerical),
+            CIHigh = ci.high(attachment_numerical)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh)
+
+comp_alt_rc_verb_mean <- comp_alt_rc_data %>% 
+  mutate(attachment_numerical = ifelse(attachment=="high", 1, 0),
+         explanation = ifelse(explanation == "yes", "exp", "non-exp")) %>%
+  group_by(model, exp_verb_group) %>% 
+  summarize(Mean = mean(attachment_numerical),
+            CILow = ci.low(attachment_numerical),
+            CIHigh = ci.high(attachment_numerical)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh)
+
+exp_rc_verb_alt_data <- merge(comprehension_alt_data, rc_data, by=c("model","item_id","sentence_type")) %>% 
+  mutate(rc_verb_group = case_when(sentence_type == "IC" & attachment == "low" ~ "IC\n-low",
+                                   sentence_type == "IC" & attachment == "high" ~ "IC\n-high",
+                                   sentence_type == "nonIC" & attachment == "low" ~ "nonIC\n-low",
+                                   sentence_type == "nonIC" & attachment == "high" ~ "nonIC\n-high"))
+
+exp_rc_verb_alt_mean <- exp_rc_verb_alt_data %>% 
+  mutate(explanation_numerical = ifelse(explanation=="yes", 1, 0)) %>%
+  group_by(model, rc_verb_group) %>% 
+  summarize(Mean = mean(explanation_numerical),
+            CILow = ci.low(explanation_numerical),
+            CIHigh = ci.high(explanation_numerical)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh)
 
 # 2. Plot ----
 ## Comprehension ----
@@ -122,6 +208,18 @@ comprehension_graph <- ggplot(comprehension_means,
   facet_wrap(. ~ model)
 comprehension_graph
 ggsave(comprehension_graph, file="../graphs/comprehension_pilot.pdf", width=7, height=4)
+
+## comp. alt ----
+comprehension_alt_graph <- ggplot(comprehension_alt_means,
+                              aes(x=sentence_type,y=Mean))+
+  geom_bar(stat="identity", width=0.8, alpha=0.7)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,  show.legend = FALSE)+
+  theme_bw() +
+  labs(y = "Proportion of explanation answer",
+       x = "Verb Type") +
+  facet_wrap(. ~ model)
+comprehension_alt_graph
+ggsave(comprehension_alt_graph, file="../graphs/comprehension_alt_pilot.pdf", width=7, height=4)
 
 ## RC ----
 rc_graph <- ggplot(rc_means,
@@ -158,4 +256,55 @@ comprehension_rc_verb_graph <-
   # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5))+
   facet_wrap(. ~ model)
 comprehension_rc_verb_graph
-ggsave(comprehension_rc_graph, file="../graphs/comprehension_rc_pilot.pdf", width=7, height=4)
+ggsave(comprehension_rc_verb_graph, file="../graphs/comprehension_rc_verb_pilot.pdf", width=7, height=4)
+
+exp_rc_verb_graph <- 
+  ggplot(exp_rc_verb_mean,
+         aes(x=rc_verb_group,y=Mean))+
+  geom_bar(stat="identity", width=0.8, alpha=0.7)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,  show.legend = FALSE)+
+  theme_bw() +
+  labs(y = "Proportion of explanation answer",
+       x = "Attachment height and Verb Type") +
+  # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5))+
+  facet_wrap(. ~ model)
+exp_rc_verb_graph
+ggsave(exp_rc_verb_graph, file="../graphs/exp_rc_verb_pilot.pdf", width=7, height=4)
+
+## combined with comp. alt ----
+comp_alt_rc_graph <- ggplot(comp_alt_rc_mean,
+                                 aes(x=explanation,y=Mean))+
+  geom_bar(stat="identity", width=0.8, alpha=0.7)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,  show.legend = FALSE)+
+  theme_bw() +
+  labs(y = "Proportion of high attachment",
+       x = "RC Type") +
+  facet_wrap(. ~ model)
+comp_alt_rc_graph
+ggsave(comp_alt_rc_graph, file="../graphs/comprehension_alt_rc_pilot.pdf", width=7, height=4)
+
+comp_alt_rc_verb_graph <- 
+  ggplot(comp_alt_rc_verb_mean,
+         aes(x=exp_verb_group,y=Mean))+
+  geom_bar(stat="identity", width=0.8, alpha=0.7)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,  show.legend = FALSE)+
+  theme_bw() +
+  labs(y = "Proportion of high attachment",
+       x = "RC Type and Verb Type") +
+  # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5))+
+  facet_wrap(. ~ model)
+comp_alt_rc_verb_graph
+ggsave(comp_alt_rc_verb_graph, file="../graphs/comprehension_alt_rc_verb_pilot.pdf", width=7, height=4)
+
+exp_rc_verb_alt_graph <- 
+  ggplot(exp_rc_verb_alt_mean,
+         aes(x=rc_verb_group,y=Mean))+
+  geom_bar(stat="identity", width=0.8, alpha=0.7)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,  show.legend = FALSE)+
+  theme_bw() +
+  labs(y = "Proportion of explanation answer",
+       x = "Attachment height and Verb Type") +
+  # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5))+
+  facet_wrap(. ~ model)
+exp_rc_verb_alt_graph
+ggsave(exp_rc_verb_alt_graph, file="../graphs/exp_rc_verb_alt_pilot.pdf", width=7, height=4)

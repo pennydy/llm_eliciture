@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import logging
 import random
+import re
 from openai import OpenAI
 from tqdm import tqdm
 import argparse
@@ -12,6 +13,9 @@ logger = logging.getLogger()
 client = OpenAI()
 comprehension_info = "You will read a sentence, and your task is to answer the comprehension question about that sentence. "
 rc_info = "You will read a sentence with a missing word. There are two options for the missing word, and the answer options are 1 or 2. You task is to read the sentence and choose the best option. Please answer with either 1 or 2."
+pronoun_info = "You will read a sentence, and your task is to write a follow-up sentence. The two people mentioned in the first sentence have the same gender, and the gender are marked with (m) if they are male and with (f) if they are female. Please complete the follow-up sentence by avoiding humor. "
+# pronoun_pro_info = "You will read a sentence, and your task is to write a follow-up sentence. The two people mentioned in the first sentence have the same gender, and the gender are marked with (m) if they are male and with (f) if they are female. Please complete the follow-up sentence after the pronoun by avoiding humor. "
+
 
 def softmax(x):
     return np.exp(x)/sum(np.exp(x))
@@ -41,15 +45,17 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="eliciture comprehension and rc attachment")
     parser.add_argument("--model", "-m", type=str, default="gpt-4o")
-    parser.add_argument("--task", "-t", type=str, default="comprehension")
+    # parser.add_argument("--task", "-t", type=str, default="comprehension")
     parser.add_argument("--input", "-i", type=str, default="stimuli/comprehension.csv")
     parser.add_argument("--output_dir", "-o", type=str, default="data/")
     args = parser.parse_args()
 
     prompts = pd.read_csv(args.input, header=0)
+    task = re.search(r'stimuli/(.*?)\.csv', args.input).group(1)
+
 
     for i, row in tqdm(prompts.iterrows()):
-        if args.task == "rc":
+        if task == "rc":
             og_prompt = row.prompt
             alt_prompt = row.alt_prompt
             # the order of the two options are randomized for each item (Pezeshkpour & Hruschka, 2023)
@@ -61,8 +67,10 @@ if __name__ == "__main__":
             else:
                 prompts.loc[i, "answer_option"] = row.alt_option
             prompt = rc_info + prompt
-        elif args.task == "comprehension":
-            prompt = comprehension_info + args.prompt
+        elif "pronoun" in task:
+            prompt = pronoun_info + row.prompt
+        elif task == "comprehension":
+            prompt = comprehension_info + row.prompt
         else:
             print("wrong task")
             break
@@ -76,4 +84,4 @@ if __name__ == "__main__":
 
         # prompts.to_csv(f"{args.task}_generate_system_{args.model}.csv", index=False)
         output_dir = args.output_dir
-        prompts.to_csv(os.path.join(output_dir,f"{args.task}-{args.model}.csv"), index=False)
+        prompts.to_csv(os.path.join(output_dir,f"{task}-{args.model}.csv"), index=False)
