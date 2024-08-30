@@ -1,0 +1,97 @@
+item_id,condition,sentence,prompt
+1,exp_free,The actress assisted the maid who needed help moving the furniture.,Sentence: The actress assisted the maid who needed help moving the furniture. Answer:
+1,nonexp_free,The actress assisted the maid who worked the morning shift.,Sentence: The actress assisted the maid who worked the morning shift. Answer:
+1,exp_pronoun,The actress assisted the maid who needed help moving the furniture. ,Sentence: The actress assisted the maid who needed help moving the furniture.  Answer: She ___
+1,nonexp_pronoun,The actress assisted the maid who worked the morning shift.,Sentence: The actress assisted the maid who worked the morning shift. Answer: She ___
+2,exp_free,The agent pities the rockstar who never seems to draw a crowd.,Sentence: The agent pities the rockstar who never seems to draw a crowd. Answer:
+2,nonexp_free,The agent pities the rockstar who he managed to sign last week.,Sentence: The agent pities the rockstar who he managed to sign last week. Answer:
+2,exp_pronoun,The agent pities the rockstar who never seems to draw a crowd.,Sentence: The agent pities the rockstar who never seems to draw a crowd. Answer: He ___
+2,nonexp_pronoun,The agent pities the rockstar who he managed to sign last week.,Sentence: The agent pities the rockstar who he managed to sign last week. Answer: He ___
+3,exp_free,The airline executive trusted the pilot who has a spotless flying record.,Sentence: The airline executive trusted the pilot who has a spotless flying record. Answer:
+3,nonexp_free,The airline executive trusted the pilot who flies the nonstop from Philadelphia to San Diego.,Sentence: The airline executive trusted the pilot who flies the nonstop from Philadelphia to San Diego. Answer:
+3,exp_pronoun,The airline executive trusted the pilot who has a spotless flying record.,Sentence: The airline executive trusted the pilot who has a spotless flying record. Answer: He ___
+3,nonexp_pronoun,The airline executive trusted the pilot who flies the nonstop from Philadelphia to San Diego.,Sentence: The airline executive trusted the pilot who flies the nonstop from Philadelphia to San Diego. Answer: He ___
+4,exp_free,The announcer mocked the baseball player who had struck out four times in a row.,Sentence: The announcer mocked the baseball player who had struck out four times in a row. Answer:
+4,nonexp_free,The announcer mocked the baseball player who was first in the batting lineup.,Sentence: The announcer mocked the baseball player who was first in the batting lineup. Answer:
+4,exp_pronoun,The announcer mocked the baseball player who had struck out four times in a row.,Sentence: The announcer mocked the baseball player who had struck out four times in a row. Answer: He ___
+4,nonexp_pronoun,The announcer mocked the baseball player who was first in the batting lineup.,Sentence: The announcer mocked the baseball player who was first in the batting lineup. Answer: He ___
+5,exp_free,The babysitter despises the child who acts out at every opportunity.,Sentence: The babysitter despises the child who acts out at every opportunity. Answer:
+5,nonexp_free,The babysitter despises the child who is left home every Friday night.,Sentence: The babysitter despises the child who is left home every Friday night. Answer:
+5,exp_pronoun,The babysitter despises the child who acts out at every opportunity. ,Sentence: The babysitter despises the child who acts out at every opportunity.  Answer: She ___
+5,nonexp_pronoun,The babysitter despises the child who is left home every Friday night.,Sentence: The babysitter despises the child who is left home every Friday night. Answer: She ___
+6,exp_free,The businessman worships the accountant who found him a new set of tax deductions.,Sentence: The businessman worships the accountant who found him a new set of tax deductions. Answer:
+6,nonexp_free,The businessman worships the accountant who joined the team last week.,Sentence: The businessman worships the accountant who joined the team last week. Answer:
+6,exp_pronoun,The businessman worships the accountant who found him a new set of tax deductions.,Sentence: The businessman worships the accountant who found him a new set of tax deductions. Answer: He ___
+6,nonexp_pronoun,The businessman worships the accountant who joined the team last week.,Sentence: The businessman worships the accountant who joined the team last week. Answer: He ___
+7,exp_free,The chessmaster ridiculed the novice who made a bad move.,Sentence: The chessmaster ridiculed the novice who made a bad move. Answer:
+7,nonexp_free,The chessmaster ridiculed the novice who had his lesson on Friday afternoons.,Sentence: The chessmaster ridiculed the novice who had his lesson on Friday afternoons. Answer:
+7,exp_pronoun,The chessmaster ridiculed the novice who made a bad move.,Sentence: The chessmaster ridiculed the novice who made a bad move. Answer: He ___
+7,nonexp_pronoun,The chessmaster ridiculed the novice who had his lesson on Friday afternoons.,Sentence: The chessmaster ridiculed the novice who had his lesson on Friday afternoons. Answer: He ___
+8,exp_free,The child fears the karate instructor who acts like a drill sergeant.,Sentence: The child fears the karate instructor who acts like a drill sergeant. Answer:
+8,nonexp_free,The child fears the karate instructor who recently joined the training studio.,Sentence: The child fears the karate instructor who recently joined the training studio. Answer:
+8,exp_pronoun,The child fears the karate instructor who acts like a drill sergeant.,Sentence: The child fears the karate instructor who acts like a drill sergeant. Answer: He ___
+8,nonexp_pronoun,The child fears the karate instructor who recently joined the training studio.,Sentence: The child fears the karate instructor who recently joined the training studio. Answer: He ___
+9,exp_free,The company president pacified the investor who was complaining about the impending merger.,Sentence: The company president pacified the investor who was complaining about the impending merger. Answer:
+9,nonexp_free,The company president pacified the investor who stopped by for an impromptu meeting.,Sentence: The company president pacified the investor who stopped by for an impromptu meeting. Answer:
+9,exp_pronoun,The company president pacified the investor who was complaining about the impending merger.,Sentence: The company president pacified the investor who was complaining about the impending merger. Answer: He ___
+9,nonexp_pronoun,The company president pacified the investor who stopped by for an impromptu meeting.,Sentence: The company president pacified the investor who stopped by for an impromptu meeting. Answer: He ___
+10,exp_free,The doctor reproached the patient who never takes her medicine.,Sentence: The doctor reproached the patient who never takes her medicine. Answer:
+10,nonexp_free,The doctor reproached the patient who came in at 3pm.,Sentence: The doctor reproached the patient who came in at 3pm. Answer:
+10,exp_pronoun,The doctor reproached the patient who never takes her medicine.,Sentence: The doctor reproached the patient who never takes her medicine. Answer: She ___
+10,nonexp_pronoun,The doctor reproached the patient who came in at 3pm.,Sentence: The doctor reproached the patient who came in at 3pm. Answer: She ___
+11,exp_free,The editor corrected the reporter who had made an obvious error.,Sentence: The editor corrected the reporter who had made an obvious error. Answer:
+11,nonexp_free,The editor corrected the reporter who had written that day's lead story.,Sentence: The editor corrected the reporter who had written that day's lead story. Answer:
+11,exp_pronoun,The editor corrected the reporter who had made an obvious error.,Sentence: The editor corrected the reporter who had made an obvious error. Answer: She ___
+11,nonexp_pronoun,The editor corrected the reporter who had written that day's lead story.,Sentence: The editor corrected the reporter who had written that day's lead story. Answer: She ___
+12,exp_free,The employee envied the manager who had gotten a big raise.,Sentence: The employee envied the manager who had gotten a big raise. Answer:
+12,nonexp_free,The employee envied the manager who worked in the next department over.,Sentence: The employee envied the manager who worked in the next department over. Answer:
+12,exp_pronoun,The employee envied the manager who had gotten a big raise.,Sentence: The employee envied the manager who had gotten a big raise. Answer: He ___
+12,nonexp_pronoun,The employee envied the manager who worked in the next department over.,Sentence: The employee envied the manager who worked in the next department over. Answer: He ___
+13,exp_free,The landlord valued the tenant who always keeps the apartment clean.,Sentence: The landlord valued the tenant who always keeps the apartment clean. Answer:
+13,nonexp_free,The landlord valued the tenant who moved in last February.,Sentence: The landlord valued the tenant who moved in last February. Answer:
+13,exp_pronoun,The landlord valued the tenant who always keeps the apartment clean.,Sentence: The landlord valued the tenant who always keeps the apartment clean. Answer: He ___
+13,nonexp_pronoun,The landlord valued the tenant who moved in last February.,Sentence: The landlord valued the tenant who moved in last February. Answer: He ___
+14,exp_free,The musician detests the record label representative who always puts down her music.,Sentence: The musician detests the record label representative who always puts down her music. Answer:
+14,nonexp_free,The musician detests the record label representative who flew into town this morning.,Sentence: The musician detests the record label representative who flew into town this morning. Answer:
+14,exp_pronoun,The musician detests the record label representative who always puts down her music.,Sentence: The musician detests the record label representative who always puts down her music. Answer: She ___
+14,nonexp_pronoun,The musician detests the record label representative who flew into town this morning.,Sentence: The musician detests the record label representative who flew into town this morning. Answer: She ___
+15,exp_free,The nun praised the parishioner who had worked so hard to help the poor.,Sentence: The nun praised the parishioner who had worked so hard to help the poor. Answer:
+15,nonexp_free,The nun praised the parishioner who was from San Diego county.,Sentence: The nun praised the parishioner who was from San Diego county. Answer:
+15,exp_pronoun,The nun praised the parishioner who had worked so hard to help the poor.,Sentence: The nun praised the parishioner who had worked so hard to help the poor. Answer: She ___
+15,nonexp_pronoun,The nun praised the parishioner who was from San Diego county.,Sentence: The nun praised the parishioner who was from San Diego county. Answer: She ___
+16,exp_free,The onlooker complimented the bride who looked dazzling in her designer wedding dress.,Sentence: The onlooker complimented the bride who looked dazzling in her designer wedding dress. Answer:
+16,nonexp_free,The onlooker complimented the bride who arrived at the restaurant.,Sentence: The onlooker complimented the bride who arrived at the restaurant. Answer:
+16,exp_pronoun,The onlooker complimented the bride who looked dazzling in her designer wedding dress.,Sentence: The onlooker complimented the bride who looked dazzling in her designer wedding dress. Answer: She ___
+16,nonexp_pronoun,The onlooker complimented the bride who arrived at the restaurant.,Sentence: The onlooker complimented the bride who arrived at the restaurant. Answer: She ___
+17,exp_free,The politician resented the journalist who opened the interview by asking about her extramarital affair.,Sentence: The politician resented the journalist who opened the interview by asking about her extramarital affair. Answer:
+17,nonexp_free,The politician resented the journalist who who interviewed her yesterday.,Sentence: The politician resented the journalist who who interviewed her yesterday. Answer:
+17,exp_pronoun,The politician resented the journalist who opened the interview by asking about her extramarital affair.,Sentence: The politician resented the journalist who opened the interview by asking about her extramarital affair. Answer: She ___
+17,nonexp_pronoun,The politician resented the journalist who who interviewed her yesterday.,Sentence: The politician resented the journalist who who interviewed her yesterday. Answer: She ___
+18,exp_free,The professor rewarded the student who received a perfect score on the final.,Sentence: The professor rewarded the student who received a perfect score on the final. Answer:
+18,nonexp_free,The professor rewarded the student who stopped by during office hours yesterday.,Sentence: The professor rewarded the student who stopped by during office hours yesterday. Answer:
+18,exp_pronoun,The professor rewarded the student who received a perfect score on the final.,Sentence: The professor rewarded the student who received a perfect score on the final. Answer: She ___
+18,nonexp_pronoun,The professor rewarded the student who stopped by during office hours yesterday.,Sentence: The professor rewarded the student who stopped by during office hours yesterday. Answer: She ___
+19,exp_free,The restaurant owner scolded the chef who was routinely letting food go to waste.,Sentence: The restaurant owner scolded the chef who was routinely letting food go to waste. Answer:
+19,nonexp_free,The restaurant owner scolded the chef who was hired last month.,Sentence: The restaurant owner scolded the chef who was hired last month. Answer:
+19,exp_pronoun,The restaurant owner scolded the chef who was routinely letting food go to waste.,Sentence: The restaurant owner scolded the chef who was routinely letting food go to waste. Answer: He ___
+19,nonexp_pronoun,The restaurant owner scolded the chef who was hired last month.,Sentence: The restaurant owner scolded the chef who was hired last month. Answer: He ___
+20,exp_free,The scientist hates the health and safety expert who fines them after every inspection.,Sentence: The scientist hates the health and safety expert who fines them after every inspection. Answer:
+20,nonexp_free,The scientist hates the health and safety expert who the company hired last month.,Sentence: The scientist hates the health and safety expert who the company hired last month. Answer:
+20,exp_pronoun,The scientist hates the health and safety expert who fines them after every inspection.,Sentence: The scientist hates the health and safety expert who fines them after every inspection. Answer: She ___
+20,nonexp_pronoun,The scientist hates the health and safety expert who the company hired last month.,Sentence: The scientist hates the health and safety expert who the company hired last month. Answer: She ___
+21,exp_free,The secretary adores the lawyer who gives her a big raise each year.,Sentence: The secretary adores the lawyer who gives her a big raise each year. Answer:
+21,nonexp_free,The secretary adores the lawyer who works in the office across from her desk.,Sentence: The secretary adores the lawyer who works in the office across from her desk. Answer:
+21,exp_pronoun,The secretary adores the lawyer who gives her a big raise each year.,Sentence: The secretary adores the lawyer who gives her a big raise each year. Answer: She ___
+21,nonexp_pronoun,The secretary adores the lawyer who works in the office across from her desk.,Sentence: The secretary adores the lawyer who works in the office across from her desk. Answer: She ___
+22,exp_free,The teacher blamed the second grader who has a reputation for stealing things.,Sentence: The teacher blamed the second grader who has a reputation for stealing things. Answer:
+22,nonexp_free,The teacher blamed the second grader who sits in the front of the class.,Sentence: The teacher blamed the second grader who sits in the front of the class. Answer:
+22,exp_pronoun,The teacher blamed the second grader who has a reputation for stealing things.,Sentence: The teacher blamed the second grader who has a reputation for stealing things. Answer: He ___
+22,nonexp_pronoun,The teacher blamed the second grader who sits in the front of the class.,Sentence: The teacher blamed the second grader who sits in the front of the class. Answer: He ___
+23,exp_free,The trainer consoled the boxer who had lost the fight.,Sentence: The trainer consoled the boxer who had lost the fight. Answer:
+23,nonexp_free,The trainer consoled the boxer who had trained with him for 16 months.,Sentence: The trainer consoled the boxer who had trained with him for 16 months. Answer:
+23,exp_pronoun,The trainer consoled the boxer who had lost the fight.,Sentence: The trainer consoled the boxer who had lost the fight. Answer: He ___
+23,nonexp_pronoun,The trainer consoled the boxer who had trained with him for 16 months.,Sentence: The trainer consoled the boxer who had trained with him for 16 months. Answer: He ___
+24,exp_free,The wedding planner criticized the florist who had brought dying flowers to the ceremony.,Sentence: The wedding planner criticized the florist who had brought dying flowers to the ceremony. Answer:
+24,nonexp_free,The wedding planner criticized the florist who had been hired for the ceremony.,Sentence: The wedding planner criticized the florist who had been hired for the ceremony. Answer:
+24,exp_pronoun,The wedding planner criticized the florist who had brought dying flowers to the ceremony.,Sentence: The wedding planner criticized the florist who had brought dying flowers to the ceremony. Answer: She ___
+24,nonexp_pronoun,The wedding planner criticized the florist who had been hired for the ceremony.,Sentence: The wedding planner criticized the florist who had been hired for the ceremony. Answer: She ___

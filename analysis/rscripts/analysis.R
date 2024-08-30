@@ -16,6 +16,7 @@ source("helpers.R")
 
 # 1. Data ----
 ## Comprehension ----
+### original prompt ----
 comprehension.gpt4o.data <- read.csv("../../data/comprehension-gpt-4o_annotate.csv", header=TRUE) %>% 
   na.omit()
 comprehension.gpt4.data <- read.csv("../../data/comprehension-gpt-4-annotate.csv", header=TRUE) %>% 
@@ -42,7 +43,7 @@ comprehension_means <- comprehension_data %>%
          YMax = Mean+CIHigh)
 
 
-## Comprehension alternative prompt ----
+### alternative prompt ----
 comprehension_alt.gpt4o.data <- read.csv("../../data/comprehension_alt-gpt-4o.csv", header=TRUE) %>% 
   na.omit() %>% 
   mutate(explanation = ifelse(grepl("Yes", answer, ignore.case = TRUE), "yes", "no"))
@@ -107,6 +108,7 @@ rc_means <- rc_data %>%
          YMax = Mean+CIHigh)
 
 ## combined ----
+### with original prompt ----
 comprehension_rc_data <- merge(comprehension_data, rc_data, by=c("model","item_id","sentence_type")) %>% 
   mutate(exp_verb_group = case_when(sentence_type == "IC" & explanation == "yes" ~ "IC\n-exp",
                                     sentence_type == "IC" & explanation == "no" ~ "IC\n-nonexp",
@@ -151,7 +153,7 @@ exp_rc_verb_mean <- exp_rc_verb_data %>%
   mutate(YMin = Mean-CILow,
          YMax = Mean+CIHigh)
 
-## combined with comp. alt ----
+### with alternative prompt ----
 comp_alt_rc_data <- merge(comprehension_alt_data, rc_data, by=c("model","item_id","sentence_type")) %>%
   mutate(exp_verb_group = case_when(sentence_type == "IC" & explanation == "yes" ~ "IC\n-exp",
                                     sentence_type == "IC" & explanation == "no" ~ "IC\n-nonexp",
@@ -196,12 +198,94 @@ exp_rc_verb_alt_mean <- exp_rc_verb_alt_data %>%
   mutate(YMin = Mean-CILow,
          YMax = Mean+CIHigh)
 
+
+## Pronoun ----
+### free prompt ----
+pronoun.free.gpt4o.data <- read.csv("../../data/pronoun_free-gpt-4o_annotate.csv", header=TRUE) %>% 
+  na.omit() %>% 
+  filter(pronoun %in% c("yes", "no") & object %in% c("yes", "no"))
+pronoun.free.gpt4.data <- read.csv("../../data/pronoun_free-gpt-4_annotate.csv", header=TRUE) %>% 
+  na.omit() %>% 
+  filter(pronoun %in% c("yes", "no") & object %in% c("yes", "no"))
+pronoun.free.gpt35.data <- read.csv("../../data/pronoun_free-gpt-3.5-turbo_annotate.csv", header=TRUE) %>% 
+  na.omit() %>% 
+  filter(pronoun %in% c("yes", "no") & object %in% c("yes", "no"))
+
+pronoun_free_data <- bind_rows(lst(pronoun.free.gpt4o.data, pronoun.free.gpt4.data, pronoun.free.gpt35.data), .id="model") %>% 
+  mutate(model = case_when(model == "pronoun.free.gpt4o.data" ~ "gpt-4o",
+                           model == "pronoun.free.gpt35.data" ~ "gpt-3.5-turbo",
+                           model == "pronoun.free.gpt4.data" ~ "gpt-4"),
+         pronoun_numerical = ifelse(pronoun == "yes", 1, 0),
+         explanation_numerical = ifelse(explanation == "yes", 1, 0),
+         reference = if_else(object == "yes", "object", "subject"),
+         RC_type = if_else(grepl("nonexp", condition), "nonexp", "exp"))
+
+### pronoun prompt ----
+pronoun.pro.gpt4o.data <- read.csv("../../data/pronoun_pro-gpt-4o_annotate.csv", header=TRUE) %>% 
+  na.omit() %>% 
+  filter(object %in% c("yes", "no"))
+pronoun.pro.gpt4.data <- read.csv("../../data/pronoun_pro-gpt-4_annotate.csv", header=TRUE) %>% 
+  na.omit() %>% 
+  filter(object %in% c("yes", "no"))
+pronoun.pro.gpt35.data <- read.csv("../../data/pronoun_pro-gpt-3.5-turbo_annotate.csv", header=TRUE) %>% 
+  na.omit() %>% 
+  filter(object %in% c("yes", "no"))
+
+pronoun_pro_data <- bind_rows(lst(pronoun.pro.gpt4o.data, pronoun.pro.gpt4.data, pronoun.pro.gpt35.data), .id="model") %>% 
+  mutate(model = case_when(model == "pronoun.pro.gpt4o.data" ~ "gpt-4o",
+                           model == "pronoun.pro.gpt35.data" ~ "gpt-3.5-turbo",
+                           model == "pronoun.pro.gpt4.data" ~ "gpt-4"),
+         object_numerical = ifelse(object == "yes", 1, 0),
+         explanation_numerical = ifelse(explanation == "yes", 1, 0),
+         RC_type = if_else(grepl("nonexp", condition), "nonexp", "exp"))
+
+### both prompts combined ----
+pronoun_data <- bind_rows(lst(pronoun_pro_data, pronoun_free_data), .id="task") %>% 
+  mutate(task = if_else(task == "pronoun_free_data", "free", "pronoun"))
+
+#### the use of pronoun in the free prompt
+pronoun_use_mean <- pronoun_free_data %>% 
+  select(model, RC_type, condition, sentence, reference,
+         pronoun, pronoun_numerical) %>% 
+  group_by(model, RC_type, reference) %>% 
+  summarize(Mean = mean(pronoun_numerical),
+            CILow = ci.low(pronoun_numerical),
+            CIHigh = ci.high(pronoun_numerical)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh)
+
+#### object mentions in both prompts
+object_mean <- pronoun_data %>% 
+  select(task, RC_type, model, condition, sentence, 
+         object, object_numerical) %>% 
+  group_by(task, RC_type, model, condition) %>% 
+  summarize(Mean = mean(object_numerical),
+            CILow = ci.low(object_numerical),
+            CIHigh = ci.high(object_numerical)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh)
+  
+#### the proportion of explanation continuation in both prompts
+explanation_mean <- pronoun_data %>% 
+  select(task, RC_type, model, condition, sentence, 
+         explanation, explanation_numerical) %>% 
+  group_by(RC_type, model) %>% 
+  summarize(Mean = mean(explanation_numerical),
+            CILow = ci.low(explanation_numerical),
+            CIHigh = ci.high(explanation_numerical)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh)
+
+
 # 2. Plot ----
 ## Comprehension ----
 comprehension_graph <- ggplot(comprehension_means,
-                              aes(x=sentence_type,y=Mean))+
+                              aes(x=sentence_type,y=Mean)) +
   geom_bar(stat="identity", width=0.8, alpha=0.7)+
-  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,  show.legend = FALSE)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax), width=.2, show.legend = FALSE) +
   theme_bw() +
   labs(y = "Proportion of explanation answer",
        x = "Verb Type") +
@@ -211,9 +295,9 @@ ggsave(comprehension_graph, file="../graphs/comprehension_pilot.pdf", width=7, h
 
 ## comp. alt ----
 comprehension_alt_graph <- ggplot(comprehension_alt_means,
-                              aes(x=sentence_type,y=Mean))+
+                              aes(x=sentence_type,y=Mean)) +
   geom_bar(stat="identity", width=0.8, alpha=0.7)+
-  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,  show.legend = FALSE)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax), width=.2, show.legend = FALSE) +
   theme_bw() +
   labs(y = "Proportion of explanation answer",
        x = "Verb Type") +
@@ -223,9 +307,9 @@ ggsave(comprehension_alt_graph, file="../graphs/comprehension_alt_pilot.pdf", wi
 
 ## RC ----
 rc_graph <- ggplot(rc_means,
-                              aes(x=sentence_type,y=Mean))+
+                              aes(x=sentence_type,y=Mean)) +
   geom_bar(stat="identity", width=0.8, alpha=0.7)+
-  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,  show.legend = FALSE)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax), width=.2, show.legend = FALSE) +
   theme_bw() +
   labs(y = "Proportion of high attachment",
        x = "Verb Type") +
@@ -235,9 +319,9 @@ ggsave(rc_graph, file="../graphs/rc_pilot.pdf", width=7, height=4)
 
 ## combined ----
 comprehension_rc_graph <- ggplot(comprehension_rc_mean,
-                                 aes(x=explanation,y=Mean))+
+                                 aes(x=explanation,y=Mean)) +
   geom_bar(stat="identity", width=0.8, alpha=0.7)+
-  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,  show.legend = FALSE)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax), width=.2, show.legend = FALSE) +
   theme_bw() +
   labs(y = "Proportion of high attachment",
        x = "RC Type") +
@@ -245,24 +329,22 @@ comprehension_rc_graph <- ggplot(comprehension_rc_mean,
 comprehension_rc_graph
 ggsave(comprehension_rc_graph, file="../graphs/comprehension_rc_pilot.pdf", width=7, height=4)
 
-comprehension_rc_verb_graph <- 
-  ggplot(comprehension_rc_verb_mean,
-         aes(x=exp_verb_group,y=Mean))+
+comprehension_rc_verb_graph <- ggplot(comprehension_rc_verb_mean,
+                                      aes(x=exp_verb_group,y=Mean)) +
   geom_bar(stat="identity", width=0.8, alpha=0.7)+
-  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,  show.legend = FALSE)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax), width=.2, show.legend = FALSE) +
   theme_bw() +
   labs(y = "Proportion of high attachment",
        x = "RC Type and Verb Type") +
-  # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5))+
+  # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5)) +
   facet_wrap(. ~ model)
 comprehension_rc_verb_graph
 ggsave(comprehension_rc_verb_graph, file="../graphs/comprehension_rc_verb_pilot.pdf", width=7, height=4)
 
-exp_rc_verb_graph <- 
-  ggplot(exp_rc_verb_mean,
-         aes(x=rc_verb_group,y=Mean))+
-  geom_bar(stat="identity", width=0.8, alpha=0.7)+
-  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,  show.legend = FALSE)+
+exp_rc_verb_graph <- ggplot(exp_rc_verb_mean,
+                            aes(x=rc_verb_group,y=Mean)) +
+  geom_bar(stat="identity", width=0.8, alpha=0.7) +
+  geom_errorbar(aes(ymin=YMin,ymax=YMax), width=.2, show.legend = FALSE)+
   theme_bw() +
   labs(y = "Proportion of explanation answer",
        x = "Attachment height and Verb Type") +
@@ -273,9 +355,9 @@ ggsave(exp_rc_verb_graph, file="../graphs/exp_rc_verb_pilot.pdf", width=7, heigh
 
 ## combined with comp. alt ----
 comp_alt_rc_graph <- ggplot(comp_alt_rc_mean,
-                                 aes(x=explanation,y=Mean))+
-  geom_bar(stat="identity", width=0.8, alpha=0.7)+
-  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,  show.legend = FALSE)+
+                                 aes(x=explanation,y=Mean)) +
+  geom_bar(stat="identity", width=0.8, alpha=0.7) +
+  geom_errorbar(aes(ymin=YMin,ymax=YMax), width=.2, show.legend = FALSE) +
   theme_bw() +
   labs(y = "Proportion of high attachment",
        x = "RC Type") +
@@ -283,11 +365,10 @@ comp_alt_rc_graph <- ggplot(comp_alt_rc_mean,
 comp_alt_rc_graph
 ggsave(comp_alt_rc_graph, file="../graphs/comprehension_alt_rc_pilot.pdf", width=7, height=4)
 
-comp_alt_rc_verb_graph <- 
-  ggplot(comp_alt_rc_verb_mean,
-         aes(x=exp_verb_group,y=Mean))+
+comp_alt_rc_verb_graph <- ggplot(comp_alt_rc_verb_mean,
+                                 aes(x=exp_verb_group,y=Mean)) +
   geom_bar(stat="identity", width=0.8, alpha=0.7)+
-  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,  show.legend = FALSE)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax), width=.2, show.legend = FALSE) +
   theme_bw() +
   labs(y = "Proportion of high attachment",
        x = "RC Type and Verb Type") +
@@ -296,15 +377,81 @@ comp_alt_rc_verb_graph <-
 comp_alt_rc_verb_graph
 ggsave(comp_alt_rc_verb_graph, file="../graphs/comprehension_alt_rc_verb_pilot.pdf", width=7, height=4)
 
-exp_rc_verb_alt_graph <- 
-  ggplot(exp_rc_verb_alt_mean,
-         aes(x=rc_verb_group,y=Mean))+
+exp_rc_verb_alt_graph <- ggplot(exp_rc_verb_alt_mean,
+                                aes(x=rc_verb_group,y=Mean)) +
   geom_bar(stat="identity", width=0.8, alpha=0.7)+
-  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,  show.legend = FALSE)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax), width=.2, show.legend = FALSE) +
   theme_bw() +
   labs(y = "Proportion of explanation answer",
        x = "Attachment height and Verb Type") +
-  # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5))+
+  # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5)) +
   facet_wrap(. ~ model)
 exp_rc_verb_alt_graph
 ggsave(exp_rc_verb_alt_graph, file="../graphs/exp_rc_verb_alt_pilot.pdf", width=7, height=4)
+
+
+## Pronoun ----
+### explanation continuation ----
+exp_graph <- ggplot(explanation_mean,
+                    aes(x=RC_type,y=Mean)) +
+  geom_bar(stat="identity", width=0.8, alpha=0.7) +
+  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,
+                show.legend = FALSE)+
+  theme_bw() +
+  labs(y = "Proportion of explanation continuation",
+       x = "RC Type") +
+  facet_wrap(. ~ model)
+exp_graph
+ggsave(exp_graph, file="../graphs/explanation_pilot.pdf", width=7, height=4)
+
+### object mentions in free prompt ----
+object_free_graph <- ggplot(object_mean %>% 
+                              filter(task == "free"),
+                            aes(x=RC_type,y=Mean)) +
+  geom_bar(stat="identity", width=0.8, alpha=0.7) +
+  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=.2,
+                show.legend = FALSE)+
+  theme_bw() +
+  labs(y = "Proportion of object mentions",
+       x = "RC Type") +
+  facet_wrap(. ~ model)
+object_free_graph
+ggsave(object_free_graph, file="../graphs/object_free_pilot.pdf", width=7, height=4)
+
+### pronoun use in free prompt ----
+pronoun_free_graph <- ggplot(pronoun_use_mean,
+                             aes(x=RC_type,y=Mean,
+                                 fill=reference)) +
+  geom_bar(position=position_dodge(), stat="identity",
+           alpha=0.7, colour="black", size=0.3) +
+  geom_errorbar(aes(ymin=YMin,ymax=YMax),
+                position=position_dodge(width = 0.9),
+                width=.2,
+                show.legend = FALSE)+
+  theme_bw() +
+  labs(y = "Proportion of pronoun uses",
+       x = "RC Type") +
+  scale_fill_manual(labels = c("Object", "Subject"), values = c("white", "black")) +
+  guides(fill=guide_legend(title="Pronoun\nreference")) +
+  facet_wrap(. ~ model)
+pronoun_free_graph
+ggsave(pronoun_free_graph, file="../graphs/pronoun_free_pilot.pdf", width=7, height=4)
+
+### object use in both prompts ----
+object_graph <- ggplot(object_mean,
+                       aes(x=RC_type,y=Mean,
+                           fill=task)) +
+  geom_bar(position=position_dodge(), stat="identity",
+           alpha=0.7, colour="black", size=0.3) +
+  geom_errorbar(aes(ymin=YMin,ymax=YMax),
+                position=position_dodge(width = 0.9),
+                width=.2,
+                show.legend = FALSE)+
+  theme_bw() +
+  labs(y = "Proportion of object mentions",
+       x = "RC Type") +
+  scale_fill_manual(labels = c("Full-stop", "Pronoun"), values = c("white", "black")) +
+  guides(fill=guide_legend(title="Prompt")) +
+  facet_wrap(. ~ model)
+object_graph
+ggsave(object_graph, file="../graphs/object_pilot.pdf", width=7, height=4)

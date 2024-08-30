@@ -1,0 +1,49 @@
+item_id,condition,sentence,prompt
+1,exp_free,The actress (f) assisted the maid (f) who needed help moving the furniture.,Sentence: The actress (f) assisted the maid (f) who needed help moving the furniture. Answer:
+1,nonexp_free,The actress (f) assisted the maid (f) who worked the morning shift.,Sentence: The actress (f) assisted the maid (f) who worked the morning shift. Answer:
+2,exp_free,The agent (m) pities the rockstar (m) who never seems to draw a crowd.,Sentence: The agent (m) pities the rockstar (m) who never seems to draw a crowd. Answer:
+2,nonexp_free,The agent (m) pities the rockstar (m) who he managed to sign last week.,Sentence: The agent (m) pities the rockstar (m) who he managed to sign last week. Answer:
+3,exp_free,The airline executive (m) trusted the pilot (m) who has a spotless flying record.,Sentence: The airline executive (m) trusted the pilot (m) who has a spotless flying record. Answer:
+3,nonexp_free,The airline executive (m) trusted the pilot (m) who flies the nonstop from Philadelphia to San Diego.,Sentence: The airline executive (m) trusted the pilot (m) who flies the nonstop from Philadelphia to San Diego. Answer:
+4,exp_free,The announcer (m) mocked the baseball player (m) who had struck out four times in a row.,Sentence: The announcer (m) mocked the baseball player (m) who had struck out four times in a row. Answer:
+4,nonexp_free,The announcer (m) mocked the baseball player (m) who was first in the batting lineup.,Sentence: The announcer (m) mocked the baseball player (m) who was first in the batting lineup. Answer:
+5,exp_free,The babysitter (f) despises the child (f) who acts out at every opportunity.,Sentence: The babysitter (f) despises the child (f) who acts out at every opportunity. Answer:
+5,nonexp_free,The babysitter (f) despises the child (f) who is left home every Friday night.,Sentence: The babysitter (f) despises the child (f) who is left home every Friday night. Answer:
+6,exp_free,The businessman (m) worships the accountant (m) who found him a new set of tax deductions.,Sentence: The businessman (m) worships the accountant (m) who found him a new set of tax deductions. Answer:
+6,nonexp_free,The businessman (m) worships the accountant (m) who joined the team last week.,Sentence: The businessman (m) worships the accountant (m) who joined the team last week. Answer:
+7,exp_free,The chessmaster (m) ridiculed the novice (m) who made a bad move.,Sentence: The chessmaster (m) ridiculed the novice (m) who made a bad move. Answer:
+7,nonexp_free,The chessmaster (m) ridiculed the novice (m) who had his lesson on Friday afternoons.,Sentence: The chessmaster (m) ridiculed the novice (m) who had his lesson on Friday afternoons. Answer:
+8,exp_free,The child (m) fears the karate instructor (m) who acts like a drill sergeant.,Sentence: The child (m) fears the karate instructor (m) who acts like a drill sergeant. Answer:
+8,nonexp_free,The child (m) fears the karate instructor (m) who recently joined the training studio.,Sentence: The child (m) fears the karate instructor (m) who recently joined the training studio. Answer:
+9,exp_free,The company president (m) pacified the investor (m) who was complaining about the impending merger.,Sentence: The company president (m) pacified the investor (m) who was complaining about the impending merger. Answer:
+9,nonexp_free,The company president (m) pacified the investor (m) who stopped by for an impromptu meeting.,Sentence: The company president (m) pacified the investor (m) who stopped by for an impromptu meeting. Answer:
+10,exp_free,The doctor (f) reproached the patient (f) who never takes her medicine.,Sentence: The doctor (f) reproached the patient (f) who never takes her medicine. Answer:
+10,nonexp_free,The doctor (f) reproached the patient (f) who came in at 3pm.,Sentence: The doctor (f) reproached the patient (f) who came in at 3pm. Answer:
+11,exp_free,The editor (f) corrected the reporter (f) who had made an obvious error.,Sentence: The editor (f) corrected the reporter (f) who had made an obvious error. Answer:
+11,nonexp_free,The editor (f) corrected the reporter (f) who had written that day's lead story.,Sentence: The editor (f) corrected the reporter (f) who had written that day's lead story. Answer:
+12,exp_free,The employee (m) envied the manager (m) who had gotten a big raise.,Sentence: The employee (m) envied the manager (m) who had gotten a big raise. Answer:
+12,nonexp_free,The employee (m) envied the manager (m) who worked in the next department over.,Sentence: The employee (m) envied the manager (m) who worked in the next department over. Answer:
+13,exp_free,The landlord (m) valued the tenant (m) who always keeps the apartment clean.,Sentence: The landlord (m) valued the tenant (m) who always keeps the apartment clean. Answer:
+13,nonexp_free,The landlord (m) valued the tenant (m) who moved in last February.,Sentence: The landlord (m) valued the tenant (m) who moved in last February. Answer:
+14,exp_free,The musician (f) detests the record label representative (f) who always puts down her music.,Sentence: The musician (f) detests the record label representative (f) who always puts down her music. Answer:
+14,nonexp_free,The musician (f) detests the record label representative (f) who flew into town this morning.,Sentence: The musician (f) detests the record label representative (f) who flew into town this morning. Answer:
+15,exp_free,The nun (f) praised the parishioner (f) who had worked so hard to help the poor.,Sentence: The nun (f) praised the parishioner (f) who had worked so hard to help the poor. Answer:
+15,nonexp_free,The nun (f) praised the parishioner (f) who was from San Diego county.,Sentence: The nun (f) praised the parishioner (f) who was from San Diego county. Answer:
+16,exp_free,The onlooker (f) complimented the bride (f) who looked dazzling in her designer wedding dress.,Sentence: The onlooker (f) complimented the bride (f) who looked dazzling in her designer wedding dress. Answer:
+16,nonexp_free,The onlooker (f) complimented the bride (f) who arrived at the restaurant.,Sentence: The onlooker (f) complimented the bride (f) who arrived at the restaurant. Answer:
+17,exp_free,The politician (f) resented the journalist (f) who opened the interview by asking about her extramarital affair.,Sentence: The politician (f) resented the journalist (f) who opened the interview by asking about her extramarital affair. Answer:
+17,nonexp_free,The politician (f) resented the journalist (f) who interviewed her yesterday.,Sentence: The politician (f) resented the journalist (f) who interviewed her yesterday. Answer:
+18,exp_free,The professor (f) rewarded the student (f) who received a perfect score on the final.,Sentence: The professor (f) rewarded the student (f) who received a perfect score on the final. Answer:
+18,nonexp_free,The professor (f) rewarded the student (f) who stopped by during office hours yesterday.,Sentence: The professor (f) rewarded the student (f) who stopped by during office hours yesterday. Answer:
+19,exp_free,The restaurant owner (m) scolded the chef (m) who was routinely letting food go to waste.,Sentence: The restaurant owner (m) scolded the chef (m) who was routinely letting food go to waste. Answer:
+19,nonexp_free,The restaurant owner (m) scolded the chef (m) who was hired last month.,Sentence: The restaurant owner (m) scolded the chef (m) who was hired last month. Answer:
+20,exp_free,The scientist (f) hates the health and safety expert (f) who fines them after every inspection.,Sentence: The scientist (f) hates the health and safety expert (f) who fines them after every inspection. Answer:
+20,nonexp_free,The scientist (f) hates the health and safety expert (f) who the company hired last month.,Sentence: The scientist (f) hates the health and safety expert (f) who the company hired last month. Answer:
+21,exp_free,The secretary (f) adores the lawyer (f) who gives her a big raise each year.,Sentence: The secretary (f) adores the lawyer (f) who gives her a big raise each year. Answer:
+21,nonexp_free,The secretary (f) adores the lawyer (f) who works in the office across from her desk.,Sentence: The secretary (f) adores the lawyer (f) who works in the office across from her desk. Answer:
+22,exp_free,The teacher (m) blamed the second grader (m) who has a reputation for stealing things.,Sentence: The teacher (m) blamed the second grader (m) who has a reputation for stealing things. Answer:
+22,nonexp_free,The teacher (m) blamed the second grader (m) who sits in the front of the class.,Sentence: The teacher (m) blamed the second grader (m) who sits in the front of the class. Answer:
+23,exp_free,The trainer (m) consoled the boxer (m) who had lost the fight.,Sentence: The trainer (m) consoled the boxer (m) who had lost the fight. Answer:
+23,nonexp_free,The trainer (m) consoled the boxer (m) who had trained with him for 16 months.,Sentence: The trainer (m) consoled the boxer (m) who had trained with him for 16 months. Answer:
+24,exp_free,The wedding planner (f) criticized the florist (f) who had brought dying flowers to the ceremony.,Sentence: The wedding planner (f) criticized the florist (f) who had brought dying flowers to the ceremony. Answer:
+24,nonexp_free,The wedding planner (f) criticized the florist (f) who had been hired for the ceremony.,Sentence: The wedding planner (f) criticized the florist (f) who had been hired for the ceremony. Answer:

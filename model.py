@@ -15,6 +15,7 @@ comprehension_info = "You will read a sentence, and your task is to answer the c
 rc_info = "You will read a sentence with a missing word. There are two options for the missing word, and the answer options are 1 or 2. You task is to read the sentence and choose the best option. Please answer with either 1 or 2."
 pronoun_info = "You will read a sentence, and your task is to write a follow-up sentence. The two people mentioned in the first sentence have the same gender, and the gender are marked with (m) if they are male and with (f) if they are female. Please complete the follow-up sentence by avoiding humor. "
 # pronoun_pro_info = "You will read a sentence, and your task is to write a follow-up sentence. The two people mentioned in the first sentence have the same gender, and the gender are marked with (m) if they are male and with (f) if they are female. Please complete the follow-up sentence after the pronoun by avoiding humor. "
+# pronoun_alt_info = "You will read a sentence, and your task is to write a follow-up sentence. The two people mentioned in the first sentence have the same gender. Please complete the follow-up sentence by avoiding humor. "
 
 
 def softmax(x):
@@ -28,7 +29,7 @@ def get_prediction(prompt, model):
         temperature = 0,
         max_tokens = 256,
         logprobs=True,
-        top_logprobs=5
+        top_logprobs=5 # ranging from 0 to 20, the number of most likely tokens to return at each token position
     )
     generated_answer = prediction.choices[0].message.content # text
     raw_probs = prediction.choices[0].logprobs.content # probability of all answers
