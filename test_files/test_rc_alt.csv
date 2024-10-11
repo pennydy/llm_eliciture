@@ -1,7 +1,0 @@
-item_id,sentence_type,target,prompt,alt_prompt
-1,IC,Anna scolded the chef of the aristocrats who ___ .,Sentence: Anna scolded the chef of the aristocrats who ___  Answer: ,Sentence: Anna scolded the chef of the aristocrats who ___  Answer: 
-1,nonIC,Anna studied with the chef of the aristocrats who ___ .,Sentence: Anna studied with the chef of the aristocrats who ___ Answer: ,Sentence: Anna studied with the chef of the aristocrats who ___  Answer: 
-2,IC,John stared at the teacher of the second graders who ___ .,Sentence: John stared at the teacher of the second graders who ___ Answer: ,Sentence: John stared at the teacher of the second graders who ___  Answer: 
-2,nonIC,John lived next to the teacher of the second graders who ___ .,Sentence: John lived next to the teacher of the second graders who ___ Answer: ,Sentence: John lived next to the teacher of the second graders who ___ Answer: 
-3,IC,Jenny assisted the maid of the executives who ___ .,Sentence: Jenny assisted the maid of the executives who ___ Answer: ,Sentence: Jenny assisted the maid of the executives who ___  Answer: 
-3,nonIC,Jenny joked with the maid of the executives who ___ .,Sentence: Jenny joked with the maid of the executives who ___ Answer: ,Sentence: Jenny joked with the maid of the executives who ___  Answer: 
