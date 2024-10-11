@@ -73,6 +73,8 @@ comprehension_alt_means <- comprehension_alt_data %>%
          YMax = Mean+CIHigh)
 
 ## RC ----
+### original prompt ----
+# the model is presented with the full context
 rc.gpt4o.data <- read.csv("../../data/rc-gpt-4o.csv", header=TRUE) %>% 
   na.omit()
 rc.gpt4.data <- read.csv("../../data/rc-gpt-4.csv", header=TRUE) %>% 
@@ -98,6 +100,42 @@ rc_data <- bind_rows(lst(rc.gpt4o.data, rc.gpt4.data, rc.gpt35.data), .id="model
   select(model, item_id,sentence_type,attachment)
 
 rc_means <- rc_data %>% 
+  mutate(attachment_numerical = ifelse(attachment=="high", 1, 0)) %>%
+  group_by(model, sentence_type) %>% 
+  summarize(Mean = mean(attachment_numerical),
+            CILow = ci.low(attachment_numerical),
+            CIHigh = ci.high(attachment_numerical)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh)
+
+### alternative prompt ----
+rc_alt.gpt4o.data <- read.csv("../../data/rc_alt-gpt-4o.csv", header=TRUE) %>% 
+  na.omit() 
+rc_alt.gpt4.data <- read.csv("../../data/rc_alt-gpt-4.csv", header=TRUE) %>% 
+  na.omit() %>% 
+  mutate(answer=as.character(answer))
+rc_alt.gpt35.data <- read.csv("../../data/rc_alt-gpt-3.5-turbo.csv", header=TRUE) %>% 
+  na.omit()
+
+rc_alt_data <- bind_rows(lst(rc_alt.gpt4o.data, rc_alt.gpt4.data, rc_alt.gpt35.data), .id="model") %>% 
+  mutate(model = case_when(model == "rc_alt.gpt4o.data" ~ "gpt-4o",
+                           model == "rc_alt.gpt35.data" ~ "gpt-3.5-turbo",
+                           model == "rc_alt.gpt4.data" ~ "gpt-4"),
+         np_order = if_else(item_id < 11, "high_sg", "high_pl"),
+         answer_choice = as.numeric(gsub("\\D", "", answer)),
+         answer_option = strsplit(answer_option, ", "),
+         option_1 = gsub("[^a-zA-Z]", "", lapply(answer_option, `[[`, 1)),
+         option_2 = gsub("[^a-zA-Z]", "",lapply(answer_option, `[[`, 2)),
+         answer = ifelse(answer_choice == 1, option_1, option_2),
+         sg_pl = if_else(answer %in% c("have", "were", "are"), "pl", "sg"),
+         attachment = case_when(np_order == "high_sg" & sg_pl == "sg" ~ "high",
+                                np_order == "high_sg" & sg_pl == "pl" ~ "low",
+                                np_order == "high_pl" & sg_pl == "pl" ~ "high",
+                                np_order == "high_pl" & sg_pl == "sg" ~ "low")) %>% 
+  select(model, item_id,sentence_type,attachment)
+
+rc_alt_means <- rc_alt_data %>% 
   mutate(attachment_numerical = ifelse(attachment=="high", 1, 0)) %>%
   group_by(model, sentence_type) %>% 
   summarize(Mean = mean(attachment_numerical),
@@ -287,7 +325,7 @@ comprehension_graph <- ggplot(comprehension_means,
   geom_bar(stat="identity", width=0.8, alpha=0.7)+
   geom_errorbar(aes(ymin=YMin,ymax=YMax), width=.2, show.legend = FALSE) +
   theme_bw() +
-  labs(y = "Proportion of explanation answer",
+  labs(y = "Proportion of explanation answers",
        x = "Verb Type") +
   facet_wrap(. ~ model)
 comprehension_graph
@@ -299,11 +337,13 @@ comprehension_alt_graph <- ggplot(comprehension_alt_means,
   geom_bar(stat="identity", width=0.8, alpha=0.7)+
   geom_errorbar(aes(ymin=YMin,ymax=YMax), width=.2, show.legend = FALSE) +
   theme_bw() +
-  labs(y = "Proportion of explanation answer",
+  labs(y = "Proportion of explanation answers",
        x = "Verb Type") +
-  facet_wrap(. ~ model)
+  facet_wrap(. ~ model) +
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10))
 comprehension_alt_graph
-ggsave(comprehension_alt_graph, file="../graphs/comprehension_alt_pilot.pdf", width=7, height=4)
+ggsave(comprehension_alt_graph, file="../graphs/comprehension_alt_pilot_1.pdf", width=5, height=4)
 
 ## RC ----
 rc_graph <- ggplot(rc_means,
@@ -315,7 +355,19 @@ rc_graph <- ggplot(rc_means,
        x = "Verb Type") +
   facet_wrap(. ~ model)
 rc_graph
-ggsave(rc_graph, file="../graphs/rc_pilot.pdf", width=7, height=4)
+ggsave(rc_graph, file="../graphs/rc_pilot.jpeg", width=5, height=4)
+
+## RC alt ----
+rc_alt_graph <- ggplot(rc_alt_means,
+                   aes(x=sentence_type,y=Mean)) +
+  geom_bar(stat="identity", width=0.8, alpha=0.7)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax), width=.2, show.legend = FALSE) +
+  theme_bw() +
+  labs(y = "Proportion of high attachment",
+       x = "Verb Type") +
+  facet_wrap(. ~ model)
+rc_alt_graph
+ggsave(rc_alt_graph, file="../graphs/rc_alt_pilot.pdf", width=7, height=4)
 
 ## combined ----
 comprehension_rc_graph <- ggplot(comprehension_rc_mean,
