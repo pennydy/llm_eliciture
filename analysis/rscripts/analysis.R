@@ -17,11 +17,11 @@ source("helpers.R")
 # 1. Data ----
 ## Comprehension ----
 ### original prompt ----
-comprehension.gpt4o.data <- read.csv("../../data/comprehension-gpt-4o_annotate.csv", header=TRUE) %>% 
+comprehension.gpt4o.data <- read.csv("../../data/comprehension/comprehension-gpt-4o_annotate.csv", header=TRUE) %>% 
   na.omit()
-comprehension.gpt4.data <- read.csv("../../data/comprehension-gpt-4-annotate.csv", header=TRUE) %>% 
+comprehension.gpt4.data <- read.csv("../../data/comprehension/comprehension-gpt-4-annotate.csv", header=TRUE) %>% 
   na.omit()
-comprehension.gpt35.data <- read.csv("../../data/comprehension-gpt-3.5-turbo_annotate.csv", header=TRUE) %>% 
+comprehension.gpt35.data <- read.csv("../../data/comprehension/comprehension-gpt-3.5-turbo_annotate.csv", header=TRUE) %>% 
   na.omit()
 
 comprehension_data <- bind_rows(lst(comprehension.gpt4o.data, comprehension.gpt4.data, comprehension.gpt35.data), .id="model") %>% 
@@ -44,13 +44,13 @@ comprehension_means <- comprehension_data %>%
 
 
 ### alternative prompt ----
-comprehension_alt.gpt4o.data <- read.csv("../../data/comprehension_alt-gpt-4o.csv", header=TRUE) %>% 
+comprehension_alt.gpt4o.data <- read.csv("../../data/comprehension_alt/comprehension_alt-gpt-4o.csv", header=TRUE) %>% 
   na.omit() %>% 
   mutate(explanation = ifelse(grepl("Yes", answer, ignore.case = TRUE), "yes", "no"))
-comprehension_alt.gpt4.data <- read.csv("../../data/comprehension_alt-gpt-4.csv", header=TRUE) %>% 
+comprehension_alt.gpt4.data <- read.csv("../../data/comprehension_alt/comprehension_alt-gpt-4.csv", header=TRUE) %>% 
   na.omit() %>% 
   mutate(explanation = ifelse(grepl("Yes", answer, ignore.case = TRUE), "yes", "no"))
-comprehension_alt.gpt35.data <- read.csv("../../data/comprehension_alt-gpt-3.5-turbo.csv", header=TRUE) %>% 
+comprehension_alt.gpt35.data <- read.csv("../../data/comprehension_alt/comprehension_alt-gpt-3.5-turbo.csv", header=TRUE) %>% 
   na.omit() %>% 
   mutate(explanation = ifelse(grepl("Yes", answer, ignore.case = TRUE), "yes", "no"))
 
@@ -75,11 +75,11 @@ comprehension_alt_means <- comprehension_alt_data %>%
 ## RC ----
 ### original prompt ----
 # the model is presented with the full context
-rc.gpt4o.data <- read.csv("../../data/rc-gpt-4o.csv", header=TRUE) %>% 
+rc.gpt4o.data <- read.csv("../../data/rc/rc-gpt-4o.csv", header=TRUE) %>% 
   na.omit()
-rc.gpt4.data <- read.csv("../../data/rc-gpt-4.csv", header=TRUE) %>% 
+rc.gpt4.data <- read.csv("../../data/rc/rc-gpt-4.csv", header=TRUE) %>% 
   na.omit()
-rc.gpt35.data <- read.csv("../../data/rc-gpt-3.5-turbo.csv", header=TRUE) %>% 
+rc.gpt35.data <- read.csv("../../data/rc/rc-gpt-3.5-turbo.csv", header=TRUE) %>% 
   na.omit()
 
 rc_data <- bind_rows(lst(rc.gpt4o.data, rc.gpt4.data, rc.gpt35.data), .id="model") %>% 
@@ -110,12 +110,12 @@ rc_means <- rc_data %>%
          YMax = Mean+CIHigh)
 
 ### alternative prompt ----
-rc_alt.gpt4o.data <- read.csv("../../data/rc_alt-gpt-4o.csv", header=TRUE) %>% 
+rc_alt.gpt4o.data <- read.csv("../../data/rc_alt/rc_alt-gpt-4o.csv", header=TRUE) %>% 
   na.omit() 
-rc_alt.gpt4.data <- read.csv("../../data/rc_alt-gpt-4.csv", header=TRUE) %>% 
+rc_alt.gpt4.data <- read.csv("../../data/rc_alt/rc_alt-gpt-4.csv", header=TRUE) %>% 
   na.omit() %>% 
   mutate(answer=as.character(answer))
-rc_alt.gpt35.data <- read.csv("../../data/rc_alt-gpt-3.5-turbo.csv", header=TRUE) %>% 
+rc_alt.gpt35.data <- read.csv("../../data/rc_alt/rc_alt-gpt-3.5-turbo.csv", header=TRUE) %>% 
   na.omit()
 
 rc_alt_data <- bind_rows(lst(rc_alt.gpt4o.data, rc_alt.gpt4.data, rc_alt.gpt35.data), .id="model") %>% 
@@ -239,13 +239,13 @@ exp_rc_verb_alt_mean <- exp_rc_verb_alt_data %>%
 
 ## Pronoun ----
 ### free prompt ----
-pronoun.free.gpt4o.data <- read.csv("../../data/pronoun_free-gpt-4o_annotate.csv", header=TRUE) %>% 
+pronoun.free.gpt4o.data <- read.csv("../../data/pronoun_free/pronoun_free-gpt-4o_annotate.csv", header=TRUE) %>% 
   na.omit() %>% 
   filter(pronoun %in% c("yes", "no") & object %in% c("yes", "no"))
-pronoun.free.gpt4.data <- read.csv("../../data/pronoun_free-gpt-4_annotate.csv", header=TRUE) %>% 
+pronoun.free.gpt4.data <- read.csv("../../data/pronoun_free/pronoun_free-gpt-4_annotate.csv", header=TRUE) %>% 
   na.omit() %>% 
   filter(pronoun %in% c("yes", "no") & object %in% c("yes", "no"))
-pronoun.free.gpt35.data <- read.csv("../../data/pronoun_free-gpt-3.5-turbo_annotate.csv", header=TRUE) %>% 
+pronoun.free.gpt35.data <- read.csv("../../data/pronoun_free/pronoun_free-gpt-3.5-turbo_annotate.csv", header=TRUE) %>% 
   na.omit() %>% 
   filter(pronoun %in% c("yes", "no") & object %in% c("yes", "no"))
 
@@ -259,13 +259,13 @@ pronoun_free_data <- bind_rows(lst(pronoun.free.gpt4o.data, pronoun.free.gpt4.da
          RC_type = if_else(grepl("nonexp", condition), "nonexp", "exp"))
 
 ### pronoun prompt ----
-pronoun.pro.gpt4o.data <- read.csv("../../data/pronoun_pro-gpt-4o_annotate.csv", header=TRUE) %>% 
+pronoun.pro.gpt4o.data <- read.csv("../../data/pronoun_pro/pronoun_pro-gpt-4o_annotate.csv", header=TRUE) %>% 
   na.omit() %>% 
   filter(object %in% c("yes", "no"))
-pronoun.pro.gpt4.data <- read.csv("../../data/pronoun_pro-gpt-4_annotate.csv", header=TRUE) %>% 
+pronoun.pro.gpt4.data <- read.csv("../../data/pronoun_pro/pronoun_pro-gpt-4_annotate.csv", header=TRUE) %>% 
   na.omit() %>% 
   filter(object %in% c("yes", "no"))
-pronoun.pro.gpt35.data <- read.csv("../../data/pronoun_pro-gpt-3.5-turbo_annotate.csv", header=TRUE) %>% 
+pronoun.pro.gpt35.data <- read.csv("../../data/pronoun_pro/pronoun_pro-gpt-3.5-turbo_annotate.csv", header=TRUE) %>% 
   na.omit() %>% 
   filter(object %in% c("yes", "no"))
 

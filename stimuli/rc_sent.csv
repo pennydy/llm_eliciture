@@ -1,0 +1,241 @@
+sent_id,item_id,verb,sentence_type,attachment,plurality,sentence
+1,1,scold,IC,high,sg,Anna scolded the chef of the aristocrats who was
+2,1,study,nonIC,high,sg,Anna studied with the chef of the aristocrats who was
+3,1,scold,IC,low,pl,Anna scolded the chef of the aristocrats who were
+4,1,study,nonIC,low,pl,Anna studied with the chef of the aristocrats who were
+5,2,stare,IC,high,sg,John stared at the teacher of the second graders who was
+6,2,live,nonIC,high,sg,John lived next to the teacher of the second graders who was
+7,2,stare,IC,low,pl,John stared at the teacher of the second graders who were
+8,2,live,nonIC,low,pl,John lived next to the teacher of the second graders who were
+9,3,assist,IC,high,sg,Jenny assisted the maid of the executives who was
+10,3,joke,nonIC,high,sg,Jenny joked with the maid of the executives who was
+11,3,assist,IC,low,pl,Jenny assisted the maid of the executives who were
+12,3,joke,nonIC,low,pl,Jenny joked with the maid of the executives who were
+13,4,trust,IC,high,sg,Nick trusted the captain of the sailors who has
+14,4,stand,nonIC,high,sg,Nick stood near the captain of the sailors who has
+15,4,trust,IC,low,pl,Nick trusted the captain of the sailors who have
+16,4,stand,nonIC,low,pl,Nick stood near the captain of the sailors who have
+17,5,correct,IC,high,sg,Angela corrected the secretary of the lawyers who was
+18,5,gossip,nonIC,high,sg,Angela gossiped with the secretary of the lawyers who was
+19,5,correct,IC,low,pl,Angela corrected the secretary of the lawyers who were
+20,5,gossip,nonIC,low,pl,Angela gossiped with the secretary of the lawyers who were
+21,6,comfort,IC,high,sg,Bob comforted the leader of the activists who was
+22,6,greet,nonIC,high,sg,Bob greeted the leader of the activists who was
+23,6,comfort,IC,low,pl,Bob comforted the leader of the activists who were
+24,6,greet,nonIC,low,pl,Bob greeted the leader of the activists who were
+25,7,envy,IC,high,sg,Laura envies the manager of the cashiers who has
+26,7,know,nonIC,high,sg,Laura knows the manager of the cashiers who has
+27,7,envy,IC,low,pl,Laura envies the manager of the cashiers who have
+28,7,know,nonIC,low,pl,Laura knows the manager of the cashiers who have
+29,8,value,IC,high,sg,Zack valued the daughter of the shopkeepers who was
+30,8,recognize,nonIC,high,sg,Zack recognized the daughter of the shopkeepers who was
+31,8,value,IC,low,pl,Zack valued the daughter of the shopkeepers who were
+32,8,recognize,nonIC,low,pl,Zack recognized the daughter of the shopkeepers who were
+33,9,fear,IC,high,sg,Sarah fears the uncle of the toddlers who is
+34,9,jog,nonIC,high,sg,Sarah jogs with the uncle of the toddlers who is
+35,9,fear,IC,low,pl,Sarah fears the uncle of the toddlers who are
+36,9,jog,nonIC,low,pl,Sarah jogs with the uncle of the toddlers who are
+37,10,notice,IC,high,sg,Adam noticed the representative of the employees who was
+38,10,resemble,nonIC,high,sg,Adam resembled the representative of the employees who was
+39,10,notice,IC,low,pl,Adam noticed the representative of the employees who were
+40,10,resemble,nonIC,low,pl,Adam resembled the representative of the employees who were
+41,11,praise,IC,high,pl,Tina praised the gardeners of the millionaire who have
+42,11,meet,nonIC,high,pl,Tina met the gardeners of the millionaire who have
+43,11,praise,IC,low,sg,Tina praised the gardeners of the millionaire who has
+44,11,meet,nonIC,low,sg,Tina met the gardeners of the millionaire who has
+45,12,hate,IC,high,pl,Justin hates the cousins of the accountant who are
+46,12,carpool,nonIC,high,pl,Justin carpools with the cousins of the accountant who are
+47,12,hate,IC,low,sg,Justin hates the cousins of the accountant who is
+48,12,carpool,nonIC,low,sg,Justin carpools with the cousins of the accountant who is
+49,13,blame,IC,high,pl,Emily blamed the nieces of the florist who have
+50,13,wait,nonIC,high,pl,Emily waited with the nieces of the florist who have
+51,13,blame,IC,low,sg,Emily blamed the nieces of the florist who has
+52,13,wait,nonIC,low,sg,Emily waited with the nieces of the florist who has
+53,14,help,IC,high,pl,Joe helped the brothers of the athlete who are
+54,14,run,nonIC,high,pl,Joe ran into the brothers of the athlete who are
+55,14,help,IC,low,sg,Joe helped the brothers of the athlete who is
+56,14,run,nonIC,low,sg,Joe ran into the brothers of the athlete who is
+57,15,reproeach,IC,high,pl,Jessica reproached the doctors of the supermodel who were
+58,15,work,nonIC,high,pl,Jessica worked with the doctors of the supermodel who were
+59,15,reproeach,IC,low,sg,Jessica reproached the doctors of the supermodel who was
+60,15,work,nonIC,low,sg,Jessica worked with the doctors of the supermodel who was
+61,16,pacify,IC,high,pl,Brian pacified the associates of the businessman who were
+62,16,visit,nonIC,high,pl,Brian visited the associates of the businessman who were
+63,16,pacify,IC,low,sg,Brian pacified the associates of the businessman who was
+64,16,visit,nonIC,low,sg,Brian visited the associates of the businessman who was
+65,17,detest,IC,high,pl,Melissa detests the children of the musician who are
+66,17,babysit,nonIC,high,pl,Melissa babysits the children of the musician who are
+67,17,detest,IC,low,sg,Melissa detests the children of the musician who is
+68,17,babysit,nonIC,low,sg,Melissa babysits the children of the musician who is
+69,18,thank,IC,high,pl,Frank thanked the servants of the dictator who are
+70,18,talk,nonIC,high,pl,Frank talked to the servants of the dictator who are
+71,18,thank,IC,low,sg,Frank thanked the servants of the dictator who is
+72,18,talk,nonIC,low,sg,Frank talked to the servants of the dictator who is
+73,19,congratulate,IC,high,pl,Tracy congratulated the bodyguards of the celebrity who were
+74,19,chat,nonIC,high,pl,Tracy chatted with the bodyguards of the celebrity who were
+75,19,congratulate,IC,low,sg,Tracy congratulated the bodyguards of the celebrity who was
+76,19,chat,nonIC,low,sg,Tracy chatted with the bodyguards of the celebrity who was
+77,20,mock,IC,high,pl,Kevin mocked the fans of the singer who were
+78,20,count,nonIC,high,pl,Kevin counted the fans of the singer who were
+79,20,mock,IC,low,sg,Kevin mocked the fans of the singer who was
+80,20,count,nonIC,low,sg,Kevin counted the fans of the singer who was
+81,21,scold,IC,high,sg,Alice scolded the coordinator of the participants who was
+82,21,joke,nonIC,high,sg,Alice joked with the coordinator of the participants who was
+83,21,scold,IC,low,pl,Alice scolded the coordinator of the participants who were
+84,21,joke,nonIC,low,pl,Alice joked with the coordinator of the participants who were
+85,22,stare,IC,high,sg,Charles stared at the patron of the artists who was
+86,22,study,nonIC,high,sg,Charles studied with the patron of the artists who was
+87,22,stare,IC,low,pl,Charles stared at the patron of the artists who were
+88,22,study,nonIC,low,pl,Charles studied with the patron of the artists who were
+89,23,assist,IC,high,sg,Ben assisted the coach of the players who was
+90,23,stand,nonIC,high,sg,Ben stood next to the coach of the players who was
+91,23,assist,IC,low,pl,Ben assisted the coach of the players who were
+92,23,stand,nonIC,low,pl,Ben stood next to the coach of the players who were
+93,24,trust,IC,high,sg,Bob trusted the physician of the patients who was
+94,24,live,nonIC,high,sg,Bob lived next to the physician of the patients who was
+95,24,trust,IC,low,pl,Bob trusted the physician of the patients who were
+96,24,live,nonIC,low,pl,Bob lived next to the physician of the patients who were
+97,25,correct,IC,high,sg,Rachel corrected the agent of the celebrities who was
+98,25,run,nonIC,high,sg,Rachel ran into the agent of the celebrities who was
+99,25,correct,IC,low,pl,Rachel corrected the agent of the celebrities who were
+100,25,run,nonIC,low,pl,Rachel ran into the agent of the celebrities who were
+101,26,thank,IC,high,sg,James thanked the analyst of the vendors who was
+102,26,chat,nonIC,high,sg,James chatted with the analyst of the vendors who was
+103,26,thank,IC,low,pl,James thanked the analyst of the vendors who were
+104,26,chat,nonIC,low,pl,James chatted with the analyst of the vendors who were
+105,27,envy,IC,high,sg,Zoey envies the representative of the voters who is
+106,27,resemble,nonIC,high,sg,Zoey resembles the representative of the voters who is
+107,27,envy,IC,low,pl,Zoey envies the representative of the voters who are
+108,27,resemble,nonIC,low,pl,Zoey resembles the representative of the voters who are
+109,28,value,IC,high,sg,Stephen values the accountant of the investors who is
+110,28,meet,nonIC,high,sg,Stephen met the accountant of the investors who is
+111,28,value,IC,low,pl,Stephen values the accountant of the investors who are
+112,28,meet,nonIC,low,pl,Stephen met the accountant of the investors who are
+113,29,fear,IC,high,sg,Liz fears the lawyer of the actors who is
+114,29,recognize,nonIC,high,sg,Liz recognizes the lawyer of the actors who is
+115,29,fear,IC,low,pl,Liz fears the lawyer of the actors who are
+116,29,recognize,nonIC,low,pl,Liz recognizes the lawyer of the actors who are
+117,30,notice,IC,high,sg,Jan noticed the son of the scientists who was
+118,30,jog,nonIC,high,sg,Jan jogged with the son of the scientists who was
+119,30,notice,IC,low,pl,Jan noticed the son of the scientists who were
+120,30,jog,nonIC,low,pl,Jan jogged with the son of the scientists who were
+121,31,praise,IC,high,pl,Luke praised the tenants of the landlord who were
+122,31,carpool,nonIC,high,pl,Luke carpooled with the tenants of the landlord who were
+123,31,praise,IC,low,sg,Luke praised the tenants of the landlord who was
+124,31,carpool,nonIC,low,sg,Luke carpooled with the tenants of the landlord who was
+125,32,hate,IC,high,pl,Karen hates the followers of the leader who are
+126,32,know,nonIC,high,pl,Karen knows the follwers of the leader who are
+127,32,hate,IC,low,sg,Karen hates the followers of the leader who is
+128,32,know,nonIC,low,sg,Karen knows the follwers of the leader who is
+129,33,blame,IC,high,pl,Jack blamed the trainees of the craftsman who were
+130,33,gossip,nonIC,high,pl,Jack gossiped with the trainees of the craftsman who were
+131,33,blame,IC,low,sg,Jack blamed the trainees of the craftsman who was
+132,33,gossip,nonIC,low,sg,Jack gossiped with the trainees of the craftsman who was
+133,34,help,IC,high,pl,Sophia helped the students of the professor who were
+134,34,wait,nonIC,high,pl,Sophia waited with the students of the professor who were
+135,34,help,IC,low,sg,Sophia helped the students of the professor who was
+136,34,wait,nonIC,low,sg,Sophia waited with the students of the professor who was
+137,35,reproach,IC,high,pl,Noah reproached the assistants of the technician who were
+138,35,visit,nonIC,high,pl,Noah visited the assistants of the technician who were
+139,35,reproach,IC,low,sg,Noah reproached the assistants of the technician who was
+140,35,visit,nonIC,low,sg,Noah visited the assistants of the technician who was
+141,36,pacify,IC,high,pl,Charlotte pacified the patients of the therapist who were
+142,36,greet,nonIC,high,pl,Charlotte greeted the patients of the therapist who were
+143,36,pacify,IC,low,sg,Charlotte pacified the patients of the therapist who was
+144,36,greet,nonIC,low,sg,Charlotte greeted the patients of the therapist who was
+145,37,detest,IC,high,pl,Evelyn detests the supporters of the candidate who have
+146,37,work,nonIC,high,pl,Evelyn works with the supporters of the candidate who have
+147,37,detest,IC,low,sg,Evelyn detests the supporters of the candidate who has
+148,37,work,nonIC,low,sg,Evelyn works with the supporters of the candidate who has
+149,38,comfort,IC,high,pl,Ken comforted the children of the actress who were
+150,38,babysit,nonIC,high,pl,Ken babysat the children of the actress who were
+151,38,comfort,IC,low,sg,Ken comforted the children of the actress who was
+152,38,babysit,nonIC,low,sg,Ken babysat the children of the actress who was
+153,39,congratulate,IC,high,pl,Henry congratulated the architects of the homeowner who were
+154,39,count,nonIC,high,pl,Henry counted the architects of the homeowner who were
+155,39,congratulate,IC,low,sg,Henry congratulated the architects of the homeowner who was
+156,39,count,nonIC,low,sg,Henry counted the architects of the homeowner who was
+157,40,mock,IC,high,pl,Olivia mocked the apprentices of the carpenter who were
+158,40,talk,nonIC,high,pl,Olivia talked to the apprentices of the carpenter who were
+159,40,mock,IC,low,sg,Olivia mocked the apprentices of the carpenter who was
+160,40,talk,nonIC,low,sg,Olivia talked to the apprentices of the carpenter who was
+161,41,scold,IC,high,pl,Ashley scolded the children of the historian who were
+162,41,babysit,nonIC,high,pl,Ashley studied with the children of the historian who were
+163,41,scold,IC,low,sg,Ashley scolded the children of the historian who was
+164,41,babysit,nonIC,low,sg,Ashley studied with the children of the historian who was
+165,42,stare,IC,high,pl,Daniel stared at the clients of the designer who were
+166,42,count,nonIC,high,pl,Daniel counted the clients of the designer who were
+167,42,stare,IC,low,sg,Daniel stared at the clients of the designer who was
+168,42,count,nonIC,low,sg,Daniel counted the clients of the designer who was
+169,43,assist,IC,high,pl,Megan assisted the photographers of the bride who were
+170,43,joke,nonIC,high,pl,Megan joked with the photographers of the bride who were
+171,43,assist,IC,low,sg,Megan assisted the photographers of the bride who was
+172,43,joke,nonIC,low,sg,Megan joked with the photographers of the bride who was
+173,44,trust,IC,high,pl,Lucas trusted the instructors of the pilot who were
+174,44,wait,nonIC,high,pl,Lucas waited with the instructors of the pilot who were
+175,44,trust,IC,low,sg,Lucas trusted the instructors of the pilot who was
+176,44,wait,nonIC,low,sg,Lucas waited with the instructors of the pilot who was
+177,45,correct,IC,high,pl,Michelle corrected the advisers of the officer who were
+178,45,stand,nonIC,high,pl,Michelle stood near the advisers of the officer who were
+179,45,correct,IC,low,sg,Michelle corrected the advisers of the officer who was
+180,45,stand,nonIC,low,sg,Michelle stood near the advisers of the officer who was
+181,46,comfort,IC,high,pl,Oliver comforted the advisees of the specialist who were
+182,46,gossip,nonIC,high,pl,Oliver gossiped with the advisees of the specialist who were
+183,46,comfort,IC,low,sg,Oliver comforted the advisees of the specialist who was
+184,46,gossip,nonIC,low,sg,Oliver gossiped with the advisees of the specialist who was
+185,47,envy,IC,high,pl,Rebecca envies the contractors of the homeowner who have
+186,47,recognize,nonIC,high,pl,Rebecca recognizes the contractors of the homeowner who have
+187,47,envy,IC,low,sg,Rebecca envies the contractors of the homeowner who has
+188,47,recognize,nonIC,low,sg,Rebecca recognizes the contractors of the homeowner who has
+189,48,value,IC,high,pl,Sebastian values the caretakers of the patient who are
+190,48,jog,nonIC,high,pl,Sebastian jogs with the caretakers of the patient who are
+191,48,value,IC,low,sg,Sebastian values the caretakers of the patient who is
+192,48,jog,nonIC,low,sg,Sebastian jogs with the caretakers of the patient who is
+193,49,fear,IC,high,pl,Emma fears the colleagues of the architect who have
+194,49,know,nonIC,high,pl,Emma knows the colleagues of the architect who have
+195,49,fear,IC,low,sg,Emma fears the colleagues of the architect who has
+196,49,know,nonIC,low,sg,Emma knows the colleagues of the architect who has
+197,50,notice,IC,high,pl,Ryan noticed the consultants of the entrepreneur who were
+198,50,meet,nonIC,high,pl,Ryan met the consultants of the entrepreneur who were
+199,50,notice,IC,low,sg,Ryan noticed the consultants of the entrepreneur who was
+200,50,meet,nonIC,low,sg,Ryan met the consultants of the entrepreneur who was
+201,51,praise,IC,high,sg,Amy praised the guardian of the children who was
+202,51,talk,nonIC,high,sg,Amy talked to the guardian of the children who was
+203,51,praise,IC,low,pl,Amy praised the guardian of the children who were
+204,51,talk,nonIC,low,pl,Amy talked to the guardian of the children who were
+205,52,hate,IC,high,sg,Jonathon hates the supervisor of the artisans who is
+206,52,live,nonIC,high,sg,Jonathon lives next to the supervisor of the artisans who is
+207,52,hate,IC,low,pl,Jonathon hates the supervisor of the artisans who are
+208,52,live,nonIC,low,pl,Jonathon lives next to the supervisor of the artisans who are
+209,53,blame,IC,high,sg,Natalie blamed the principal of the teachers who was
+210,53,resemble,nonIC,high,sg,Natalie resembled the principal of the teachers who was
+211,53,blame,IC,low,pl,Natalie blamed the principal of the teachers who were
+212,53,resemble,nonIC,low,pl,Natalie resembled the principal of the teachers who were
+213,54,help,IC,high,sg,Alex helped the counselor of the highschoolers who was
+214,54,greet,nonIC,high,sg,Alex greeted the counselor of the highschoolers who was
+215,54,help,IC,low,pl,Alex helped the counselor of the highschoolers who were
+216,54,greet,nonIC,low,pl,Alex greeted the counselor of the highschoolers who were
+217,55,reproach,IC,high,sg,Tiffany reproached the intern of the executives who was
+218,55,study,nonIC,high,sg,Tiffany studied with the intern of the executives who was
+219,55,reproach,IC,low,pl,Tiffany reproached the intern of the executives who were
+220,55,study,nonIC,low,pl,Tiffany studied with the intern of the executives who were
+221,56,pacify,IC,high,sg,Samuel pacified the neighbor of the musicians who was
+222,56,chat,nonIC,high,sg,Samuel chatted with the neighbor of the musicians who was
+223,56,pacify,IC,low,pl,Samuel pacified the neighbor of the musicians who were
+224,56,chat,nonIC,low,pl,Samuel chatted with the neighbor of the musicians who were
+225,57,detest,IC,high,sg,Julie detests the boss of the administrators who has
+226,57,visit,nonIC,high,sg,Julie visits the boss of the administrators who has
+227,57,detest,IC,low,pl,Julie detests the boss of the administrators who have
+228,57,visit,nonIC,low,pl,Julie visits the boss of the administrators who have
+229,58,thank,IC,high,sg,Ethan thanked the host of the guests who was
+230,58,ran,nonIC,high,sg,Ethan ran into the host of the guests who was
+231,58,thank,IC,low,pl,Ethan thanked the host of the guests who were
+232,58,ran,nonIC,low,pl,Ethan ran into the host of the guests who were
+233,59,congratulate,IC,high,sg,Grace congratulates the director of the staff members who has
+234,59,work,nonIC,high,sg,Grace works with the director of the staff members who has
+235,59,congratulate,IC,low,pl,Grace congratulates the director of the staff members who have
+236,59,work,nonIC,low,pl,Grace works with the director of the staff members who have
+237,60,mock,IC,high,sg,Joseph mocked the trainer of the boxers who was
+238,60,carpool,nonIC,high,sg,Joseph carpooled with the trainer of the boxers who was
+239,60,mock,IC,low,pl,Joseph mocked the trainer of the boxers who were
+240,60,carpool,nonIC,low,pl,Joseph carpooled with the trainer of the boxers who were
