@@ -5,4 +5,12 @@ stimuli.py
 writings/*
 updates/*
 test_files/*
+llm_env/*
 
+# work-in-progress scripts
+llama_model.py
+llama_model_generation.py
+
+# old combined analysis scripts
+analysis/graphs/*
+analysis/rscripts/*
