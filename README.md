@@ -1,5 +1,9 @@
 # Can LLMs detect elicitures and put them to use?
 
+## General information
+
+This is a working repository for the project on LLMs and conversational elicitures.
+
 ## Structure of this repository
 ```bash
 ├── analysis
