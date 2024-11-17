@@ -42,7 +42,7 @@ if __name__ == "__main__":
     # print(logprobs)
 
     if "llama" in args.model.lower():
-        # model_id = ["Llama3.2-3B", "Llama3.2-1B"]
+        # model_id = ["Llama-3.2-3B", "Llama-3.2-1B"]
         model_id = "meta-llama/" + args.model
     elif args.model == "gpt2":
         model_id = "gpt2"

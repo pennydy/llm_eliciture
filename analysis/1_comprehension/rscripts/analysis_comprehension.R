@@ -75,7 +75,8 @@ comprehension_alt_graph <- ggplot(comprehension_alt_means,
   theme(axis.text.x = element_text(size = 10),
         axis.text.y = element_text(size = 10)) +
   ylim(0,1) +
-  scale_fill_brewer(palette = "Dark2")
+  scale_fill_brewer(palette = "Dark2") + 
+  theme(legend.position="none")
 comprehension_alt_graph
 ggsave(comprehension_alt_graph, file="../graphs/comprehension_full_alt_3.pdf", width=7, height=4)
 
