@@ -2,7 +2,7 @@
 
 stimuli.py
 .Rproj.user
-writings/*
+# writings/*
 updates/*
 test_files/*
 llm_env/*
