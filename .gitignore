@@ -13,4 +13,9 @@ llama_model_generation.py
 
 # old combined analysis scripts
 analysis/graphs/*
-analysis/rscripts/*
+analysis/scripts/*
+
+# writings
+writings/SCiL_llm_elicitures.pdf
+writings/dolarge_0203.pdf
+
