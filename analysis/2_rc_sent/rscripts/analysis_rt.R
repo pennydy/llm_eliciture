@@ -9,6 +9,7 @@ library(tidytext)
 library(RColorBrewer)
 library(stringr)
 library(grid)
+library(caret)
 library(mgcv)
 library(brms)
 
@@ -37,6 +38,12 @@ rc_rt.gpt2.data <- left_join(rc_rt.gpt2.data, frequency.data, by=c("word","frequ
   rename(frequency="frequency1",
          log_freq="log_freq1")
 
+gpt2_perplexity <- rc_rt.gpt2.data %>% 
+  summarize(mean=mean(surprisal),
+            perplexity=exp(mean)) %>% 
+  pull(perplexity)
+gpt2_perplexity
+  
 rc_rt.gpt2.summary <- rc_rt.gpt2.data %>% 
   # filter(!crit %in% c("NONE", "SUBJ", "RC_VERB+3", "RC_VERB+4")) %>% 
   group_by(crit, cond) %>% 
@@ -63,6 +70,11 @@ rc_rt.llama1B.data <- left_join(rc_rt.llama1B.data, frequency.data, by=c("word",
   rename(frequency="frequency1",
          log_freq="log_freq1")
 
+llama1B_perplexity <- rc_rt.llama1B.data %>% 
+  summarize(mean=mean(surprisal),
+            perplexity=exp(mean)) %>% 
+  pull(perplexity)
+llama1B_perplexity
 
 rc_rt.llama1B.summary <- rc_rt.llama1B.data %>% 
   # filter(!crit %in% c("NONE", "SUBJ", "RC_VERB+3", "RC_VERB+4")) %>% 
@@ -90,6 +102,12 @@ rc_rt.llama3B.data <- left_join(rc_rt.llama3B.data, frequency.data, by=c("word",
   rename(frequency="frequency1",
          log_freq="log_freq1")
 
+llama3B_perplexity <- rc_rt.llama3B.data %>% 
+  summarize(mean=mean(surprisal),
+            perplexity=exp(mean)) %>% 
+  pull(perplexity)
+llama3B_perplexity
+
 rc_rt.llama3B.summary <- rc_rt.llama3B.data %>% 
   # filter(!crit %in% c("NONE", "SUBJ", "RC_VERB+3", "RC_VERB+4")) %>% 
   group_by(crit, cond) %>% 
@@ -115,6 +133,12 @@ rc_rt.llama1B_instruct.data <- left_join(rc_rt.llama1B_instruct.data, frequency.
   select(-c("frequency", "log_freq", "surp1",  "word1", "word2", "surp2",  "frequency2", "word3", "surp3", "frequency3")) %>%
   rename(frequency="frequency1",
          log_freq="log_freq1")
+
+llama1B_instruct_perplexity <- rc_rt.llama1B_instruct.data %>% 
+  summarize(mean=mean(surprisal),
+            perplexity=exp(mean)) %>% 
+  pull(perplexity)
+llama1B_instruct_perplexity
 
 rc_rt.llama1B_instruct.summary <- rc_rt.llama1B_instruct.data %>% 
   # filter(!crit %in% c("NONE", "SUBJ", "RC_VERB+3", "RC_VERB+4")) %>% 
@@ -142,6 +166,12 @@ rc_rt.llama3B_instruct.data <- left_join(rc_rt.llama3B_instruct.data, frequency.
   rename(frequency="frequency1",
          log_freq="log_freq1")
 
+llama3B_instruct_perplexity <- rc_rt.llama3B_instruct.data %>% 
+  summarize(mean=mean(surprisal),
+            perplexity=exp(mean)) %>% 
+  pull(perplexity)
+llama3B_instruct_perplexity
+
 rc_rt.llama3B_instruct.summary <- rc_rt.llama3B_instruct.data %>% 
   # filter(!crit %in% c("NONE", "SUBJ", "RC_VERB+3", "RC_VERB+4")) %>% 
   group_by(crit, cond) %>% 
@@ -167,6 +197,12 @@ rc_rt.pythia1B.data <- left_join(rc_rt.pythia1B.data, frequency.data, by=c("word
   select(-c("frequency", "log_freq", "surp1",  "word1", "word2", "surp2",  "frequency2", "word3", "surp3", "frequency3")) %>%
   rename(frequency="frequency1",
          log_freq="log_freq1")
+
+pythia1B_perplexity <- rc_rt.pythia1B.data %>% 
+  summarize(mean=mean(surprisal),
+            perplexity=exp(mean)) %>% 
+  pull(perplexity)
+pythia1B_perplexity
 
 rc_rt.pythia1B.summary <- rc_rt.pythia1B.data %>% 
   # filter(!crit %in% c("NONE", "SUBJ", "RC_VERB+3", "RC_VERB+4")) %>% 
@@ -425,9 +461,13 @@ baseline_prev3_gam = mean_rt ~ te(wordlen, bs="cr") +
   te(prev2_wordlen, bs = "cr") + 
   te(prev3_wordlen, bs = "cr") +
   te(log_freq, bs = "cr") + 
-  te(prev1_freq, bs = "cr") +
-  te(prev2_freq, bs = "cr") +
-  te(prev3_freq, bs = "cr")
+  te(surp_sum, bs = "cr") +
+  te(prev1_surpsum, bs = "cr") +
+  te(prev2_surpsum, bs = "cr") +
+  te(prev3_surpsum, bs = "cr")
+  # te(prev1_freq, bs = "cr") +
+  # te(prev2_freq, bs = "cr") +
+  # te(prev3_freq, bs = "cr")
 full_prev3_gam = mean_rt ~ s(surprisal, bs="cr", k=5) + 
   s(prev1_surp, bs="cr", k=5) + 
   s(prev2_surp, bs="cr", k=5) +
@@ -436,10 +476,14 @@ full_prev3_gam = mean_rt ~ s(surprisal, bs="cr", k=5) +
   te(prev1_wordlen, bs="cr") + 
   te(prev2_wordlen, bs="cr") + 
   te(prev3_wordlen, bs="cr") +
-  te(log_freq, bs="cr") +
-  te(prev1_freq, bs="cr") +
-  te(prev2_freq, bs="cr") +
-  te(prev3_freq, bs="cr")
+  # te(log_freq, bs="cr") +
+  # te(prev1_freq, bs="cr") +
+  # te(prev2_freq, bs="cr") +
+  # te(prev3_freq, bs="cr")
+  te(surp_sum, bs = "cr") +
+  te(prev1_surpsum, bs = "cr") +
+  te(prev2_surpsum, bs = "cr") +
+  te(prev3_surpsum, bs = "cr")
 
 baseline_gam = mean_rt ~ te(wordlen, bs="cr") +
   te(prev1_wordlen, bs = "cr") +
@@ -463,6 +507,36 @@ full_gam = mean_rt ~ s(surprisal, bs="cr", k=5) +
   # te(prev1_freq, bs="cr") +
   # te(prev2_freq, bs="cr")
 
+loglik_testset <- function(y_obs, y_pred, sigma) {
+  sum(dnorm(y_obs, mean = y_pred, sd = sigma, log = TRUE))
+}
+
+cv_gam <- function(full_formula, simple_formula, data, k=10) {
+  set.seed(1024)
+  n <- nrow(data)
+  folds <- sample(rep(1:k, length.out = n))
+  rmse_vec <- numeric(k)
+  delta_ll <- numeric(k)
+  
+  for (i in 1:k) {
+    train <- data[folds != i, ]
+    test <- data[folds == i, ]
+    full_model <- gam(full_formula, data=train)
+    full_preds <- predict(full_model, newdata=test)
+    full_sigma <- sqrt(mean(residuals(full_model)^2))
+    full_loglike <- loglik_testset(test$mean_rt, full_preds, full_sigma)
+    
+    simple_model <- gam(simple_formula, data=train)
+    simple_preds <- predict(simple_model, newdata=test)
+    simple_sigma <- sqrt(mean(residuals(simple_model)^2))
+    simple_loglike <- loglik_testset(test$mean_rt, simple_preds, simple_sigma)
+    
+    delta_ll[i] <- full_loglike - simple_loglike 
+    rmse_vec[i] <- sqrt(mean((test$mean_rt - full_preds)^2))
+  }
+ return(list(delta_ll=delta_ll, rmse_vec = rmse_vec))
+}
+
 ### GPT2 ----
 rc_rt.gpt2.data <- rc_rt.gpt2.data %>% 
   mutate(crit=fct_relevel(crit, c("SUBJ", "MAIN_VERB", "NP1", "OF", "NP2", "WHO", 
@@ -484,20 +558,21 @@ summary(gam_base_model)
 ## model comparison 
 gpt2_gam_ll <- logLik.gam(gpt2_model)
 gam_base_ll <- logLik.gam(gam_base_model)
-gpt2_gam_ll - gam_base_ll
+gpt2_gam_delta_ll <- gpt2_gam_ll - gam_base_ll
+gpt2_gam_delta_ll
 
-
-# for visualization purpose
-## create the dataframe for prediction and ploting
+## visualization
+# create the dataframe for prediction and ploting
 gpt2_prob_new_data <- get_new_df(rc_rt_prev.gpt2.data,100,2)
-## predict using the new dataframe
+# predict using the new dataframe
 gpt2_predictions <- predict(gpt2_model, newdata=gpt2_prob_new_data,type="response",
                        se.fit=TRUE)
-## plot the predictions
+# plot the model
 gpt2_rt_graph <- plot_predictions(gpt2_prob_new_data, gpt2_predictions)
 gpt2_rt_graph
 ggsave(gpt2_rt_graph, file="../graphs/gpt2_rt_graph.pdf", width=8, height=4)
 
+# plot predictions against actual
 gpt2_predictions <- predict(gpt2_model, newdata=rc_rt_prev.gpt2.data,type="response",
                             se.fit=TRUE)
 ggplot(data=data.frame(actual_rt=rc_rt_prev.gpt2.data$mean_rt,
@@ -511,6 +586,7 @@ ggplot(data=data.frame(actual_rt=rc_rt_prev.gpt2.data$mean_rt,
   labs(x="Actual reading time",
        y="Predicted reading time")
 
+# plot predicted rt against surprisal <-- not meaningful
 ggplot(data=data.frame(surprisal=rc_rt_prev.gpt2.data$surprisal,
                        actual_rt=rc_rt_prev.gpt2.data$mean_rt),
        aes(x=surprisal,
@@ -522,6 +598,17 @@ ggplot(data=data.frame(surprisal=rc_rt_prev.gpt2.data$surprisal,
   labs(x="surprisal",
        y="Reading time")
 
+## cross-validation
+# train_control <- trainControl(method = "cv", number=10)
+# gpt2_gam_cv <- train(mean_rt ~ surprisal + prev1_surp + prev2_surp + wordlen + prev1_wordlen + prev2_wordlen + surp_sum + prev1_surpsum + prev2_surpsum,
+#                      data=rc_rt_prev.gpt2.data,
+#                      method="gam",
+#                      trControl = train_control
+# )
+gpt2_gam_cv <- cv_gam(full_gam, baseline_gam, rc_rt_prev.gpt2.data)
+rmse_gpt2_gam_cv <- gpt2_gam_cv$rmse_vec
+delta_ll_gpt2_gam_cv <- gpt2_gam_cv$delta_ll
+
 #### predicting using words outside the critical region ----
 # separate into two dataframes with non-critical (training) and critical (testing) regions
 rc_rt_prev_non_crit.gpt2.data <- rc_rt.gpt2.data %>% 
@@ -531,8 +618,6 @@ rc_rt_prev_non_crit.gpt2.data <- rc_rt.gpt2.data %>%
 
 rc_rt_prev_crit.gpt2.data <- get_prev(rc_rt.gpt2.data,2) %>% 
   filter(crit %in% c("RC_VERB","RC_VERB+1", "RC_VERB+2"))
-
-gpt2_crit_predictions <- predict(gpt2_non_crit_lm, newdata=rc_rt_prev_crit.gpt2.data,type="response", se.fit=TRUE)
 
 # fit the gam model on words in non-critical regions
 ## full model
@@ -554,13 +639,13 @@ gpt2_non_crit_ll - gpt2_non_crit_base_ll
 ## create dataframe with equal entries across columns
 gpt2_non_crit_new_data <- get_new_df(rc_rt_prev_non_crit.gpt2.data, 100, 2)
 
-## predict the surprisal of words in non-critical regions using the full gam model 
+## predict the surprisal of words in non-critical regions using the full gam model
 gpt2_non_crit_predictions <- predict(gpt2_non_crit_model, newdata=gpt2_non_crit_new_data,type="response",
                             se.fit=TRUE)
 ## plot predictions (non-critical regions)
 plot_predictions(gpt2_non_crit_new_data, gpt2_non_crit_predictions)
 
-## predict the surprisal of words in non-critical regions using the base gam model 
+## predict the surprisal of words in non-critical regions using the base gam model
 gpt2_non_crit_base_predictions <- predict(gpt2_non_crit_base_model, newdata=gpt2_non_crit_new_data,type="response",
                                      se.fit=TRUE)
 ## plot base model (non-critical regions)
@@ -571,21 +656,24 @@ plot_predictions(gpt2_non_crit_new_data, gpt2_non_crit_base_predictions)
 gpt2_crit_new_data <- get_new_df(rc_rt_prev_crit.gpt2.data, 100, 2)
 
 ## predict the surprisal of words in critical regions using the full gam model 
-gpt2_crit_predictions <- predict(gpt2_non_crit_model, newdata=gpt2_crit_new_data,type="response", se.fit=TRUE)
-# gpt2_crit_predictions <- predict(gpt2_non_crit_model, newdata=rc_rt_prev_crit.gpt2.data,type="response", se.fit=TRUE)
+gpt2_crit_predictions <- predict(gpt2_non_crit_model, newdata=rc_rt_prev_crit.gpt2.data,type="response", se.fit=TRUE)
+ggplot(data=data.frame(actual_rt=rc_rt_prev_crit.gpt2.data$mean_rt,
+                       predicted_rt=gpt2_crit_predictions$fit),
+       aes(x=actual_rt,
+           y=predicted_rt))+
+  geom_point(size=1)+
+  # scale_x_continuous(limits = c(300,750))+
+  # scale_y_continuous(limits = c(300,750))+
+  geom_smooth(method="gam", formula=y~s(x,bs="cs"),se=TRUE,size=1,color="black")+
+  labs(x="Actual reading time",
+       y="Predicted reading time")
 
-# ggplot(data=data.frame(actual_rt=rc_rt_prev_crit.gpt2.data$mean_rt,
-#                        predicted_rt=gpt2_crit_predictions$fit),
-#        aes(x=actual_rt,
-#            y=predicted_rt))+
-#   geom_point(size=1)+
-#   # scale_x_continuous(limits = c(300,750))+
-#   # scale_y_continuous(limits = c(300,750))+
-#   geom_smooth(method="gam", formula=y~s(x,bs="cs"),se=TRUE,size=1)+
-#   labs(x="Actual reading time",
-#        y="Predicted reading time")
+# compute rmse
+rmse_gpt2 <- sqrt(mean((gpt2_crit_predictions$fit - rc_rt_prev_crit.gpt2.data$mean_rt)^2))
+rmse_gpt2
 
 ## plot full model (critical regions)
+gpt2_crit_predictions <- predict(gpt2_non_crit_model, newdata=gpt2_crit_new_data,type="response", se.fit=TRUE)
 gpt2_crit_graph <- plot_predictions(gpt2_crit_new_data, gpt2_crit_predictions)
 gpt2_crit_graph
 ggsave(gpt2_crit_graph, file="../graphs/gpt2_crit_graph.pdf", width=8, height=4)
@@ -602,6 +690,7 @@ gpt2_crit_ll <- get_loglikelihood(gpt2_non_crit_model, rc_rt_prev_crit.gpt2.data
 gpt2_crit_delta_ll <- gpt2_crit_ll - gpt2_crit_base_ll
 gpt2_crit_delta_ll
 
+
 ### Llama3.2-1B ----
 rc_rt.llama1B.data <- rc_rt.llama1B.data %>% 
   mutate(crit=fct_relevel(crit, c("SUBJ", "MAIN_VERB", "NP1", "OF", "NP2", "WHO",
@@ -617,7 +706,8 @@ gam.check(llama1B_model)
 
 ## model comparison 
 llama1B_gam_ll <- logLik.gam(llama1B_model)
-llama1B_gam_ll - gam_base_ll
+llama1B_gam_delta_ll <- llama1B_gam_ll - gam_base_ll
+llama1B_gam_delta_ll
 
 # for visualization purpose
 ## create the dataframe for prediction and ploting
@@ -640,6 +730,11 @@ ggplot(data=data.frame(surprisal=rc_rt_prev.llama1B.data$surprisal,
   geom_smooth(method="gam", formula=y~s(x,bs="cs"),se=TRUE,size=1)+
   labs(x="surprisal",
        y="Reading time")
+
+## cross-validation
+llama1B_gam_cv <- cv_gam(full_gam, baseline_gam, rc_rt_prev.llama1B.data)
+rmse_llama1B_gam_cv <- llama1B_gam_cv$rmse_vec
+delta_ll_llama1B_gam_cv <- llama1B_gam_cv$delta_ll
 
 #### predicting using words outside the critical region ----
 # separate into two dataframes with non-critical (training) and critical (testing) regions
@@ -684,12 +779,7 @@ llama1B_non_crit_base_predictions <- predict(llama1B_non_crit_base_model, newdat
 plot_predictions(llama1B_non_crit_new_data, llama1B_non_crit_base_predictions)
 
 # for visualization purpose -- critical regions
-## create dataframe with equal entries across columns
-llama1B_crit_new_data <- get_new_df(rc_rt_prev_crit.llama1B.data, 100, 2)
-
 ## predict the surprisal of words in critical regions using the full gam model 
-# llama1B_crit_predictions <- predict(llama1B_non_crit_model, newdata=llama1B_crit_new_data,type="response", se.fit=TRUE)
-
 llama1B_crit_predictions <- predict(llama1B_non_crit_model, newdata=rc_rt_prev_crit.llama1B.data,type="response", se.fit=TRUE)
 
 ggplot(data=data.frame(actual_rt=rc_rt_prev_crit.llama1B.data$mean_rt,
@@ -699,11 +789,18 @@ ggplot(data=data.frame(actual_rt=rc_rt_prev_crit.llama1B.data$mean_rt,
   geom_point(size=1)+
   # scale_x_continuous(limits = c(300,750))+
   # scale_y_continuous(limits = c(300,750))+
-  geom_smooth(method="gam", formula=y~s(x,bs="cs"),se=TRUE,size=1)+
+  geom_smooth(method="gam", formula=y~s(x,bs="cs"),se=TRUE,size=1,color="black")+
   labs(x="Actual reading time",
        y="Predicted reading time")
 
+# compute rmse
+rmse_llama1B <- sqrt(mean((llama1B_crit_predictions$fit - rc_rt_prev_crit.llama1B.data$mean_rt)^2))
+rmse_llama1B
+## create dataframe with equal entries across columns
+llama1B_crit_new_data <- get_new_df(rc_rt_prev_crit.llama1B.data, 100, 2)
+
 ## plot full model
+llama1B_crit_predictions <- predict(llama1B_non_crit_model, newdata=llama1B_crit_new_data,type="response", se.fit=TRUE)
 llama1B_crit_graph <- plot_predictions(llama1B_crit_new_data, llama1B_crit_predictions)
 llama1B_crit_graph
 ggsave(llama1B_crit_graph, file="../graphs/llama1B_crit_graph.pdf", width=8, height=4)
@@ -736,7 +833,8 @@ gam.check(llama3B_model)
 
 ## model comparison 
 llama3B_gam_ll <- logLik.gam(llama3B_model)
-llama3B_gam_ll - gam_base_ll
+llama3B_gam_delta_ll <- llama3B_gam_ll - gam_base_ll
+llama3B_gam_delta_ll
 
 # for visualization purpose
 ## create the dataframe for prediction and ploting
@@ -745,7 +843,7 @@ llama3B_prob_new_data <- get_new_df(rc_rt_prev.llama3B.data, 100, 2)
 llama3B_predictions <- predict(llama3B_model, newdata=llama3B_prob_new_data,type="response",
                                se.fit=TRUE)
 ## plot the predictions
-llama3B_rt_graph <- plot_predictions(llama3B_prob_new_data,llama3B_predictions)
+llama3B_rt_graph k<- plot_predictions(llama3B_prob_new_data,llama3B_predictions)
 llama3B_rt_graph
 ggsave(llama3B_rt_graph, file="../graphs/llama3B_rt_graph.pdf", width=8, height=4)
 
@@ -759,6 +857,11 @@ ggplot(data=data.frame(surprisal=rc_rt_prev.llama3B.data$surprisal,
   geom_smooth(method="gam", formula=y~s(x,bs="cs"),se=TRUE,size=1)+
   labs(x="surprisal",
        y="Reading time")
+
+## cross-validation
+llama3B_gam_cv <- cv_gam(full_gam, baseline_gam, rc_rt_prev.llama3B.data)
+rmse_llama3B_gam_cv <- llama3B_gam_cv$rmse_vec
+delta_ll_llama3B_gam_cv <- llama3B_gam_cv$delta_ll
 
 #### predicting using words outside the critical region ----
 # separate into two dataframes with non-critical (training) and critical (testing) regions
@@ -803,6 +906,25 @@ llama3B_non_crit_base_predictions <- predict(llama3B_non_crit_base_model, newdat
 plot_predictions(llama3B_non_crit_new_data, llama3B_non_crit_base_predictions)
 
 # for visualization purpose -- critical regions
+## predict the surprisal of words in critical regions using the full gam model 
+llama3B_crit_predictions <- predict(llama3B_non_crit_model, newdata=rc_rt_prev_crit.llama3B.data,type="response", se.fit=TRUE)
+
+ggplot(data=data.frame(actual_rt=rc_rt_prev_crit.llama3B.data$mean_rt,
+                       predicted_rt=llama3B_crit_predictions$fit),
+       aes(x=actual_rt,
+           y=predicted_rt))+
+  geom_point(size=1)+
+  # scale_x_continuous(limits = c(300,750))+
+  # scale_y_continuous(limits = c(300,750))+
+  geom_smooth(method="gam", formula=y~s(x,bs="cs"),se=TRUE,size=1,color="black")+
+  labs(x="Actual reading time",
+       y="Predicted reading time")
+
+# compute rmse
+rmse_llama3B <- sqrt(mean((llama3B_crit_predictions$fit - rc_rt_prev_crit.llama3B.data$mean_rt)^2))
+rmse_llama3B
+
+
 ## create dataframe with equal entries across columns
 llama3B_crit_new_data <- get_new_df(rc_rt_prev_crit.llama3B.data, 100, 2)
 
@@ -813,7 +935,6 @@ llama3B_crit_predictions <- predict(llama3B_non_crit_model, newdata=llama3B_crit
 llama3B_crit_graph <- plot_predictions(llama3B_crit_new_data, llama3B_crit_predictions)
 llama3B_crit_graph
 ggsave(llama3B_crit_graph, file="../graphs/llama3B_crit_graph.pdf", width=8, height=4)
-
 
 ## predict the surprisal of words in critical regions using the full gam model 
 llama3B_crit_base_predictions <- predict(llama3B_non_crit_base_model, newdata=llama3B_crit_new_data,type="response",
@@ -841,7 +962,8 @@ gam.check(llama1B_instruct_model)
 
 ## model comparison 
 llama1B_instruct_gam_ll <- logLik.gam(llama1B_instruct_model)
-llama1B_instruct_gam_ll - gam_base_ll
+llama1B_instruct_gam_delta_ll <- llama1B_instruct_gam_ll - gam_base_ll
+llama1B_instruct_gam_delta_ll
 
 # for visualization purpose
 ## create the dataframe for prediction and ploting
@@ -865,6 +987,10 @@ ggplot(data=data.frame(surprisal=rc_rt_prev.llama1B_instruct.data$surprisal,
   labs(x="surprisal",
        y="Reading time")
 
+## cross-validation
+llama1B_instruct_gam_cv <- cv_gam(full_gam, baseline_gam, rc_rt_prev.llama1B_instruct.data)
+rmse_llama1B_instruct_gam_cv <- llama1B_instruct_gam_cv$rmse_vec
+delta_ll_llama1B_instruct_gam_cv <- llama1B_instruct_gam_cv$delta_ll
 
 #### predicting using words outside the critical region ----
 # separate into two dataframes with non-critical (training) and critical (testing) regions
@@ -914,6 +1040,25 @@ llama1B_instruct_non_crit_base_predictions <- predict(llama1B_instruct_non_crit_
 plot_predictions(llama1B_instruct_non_crit_new_data, llama1B_instruct_non_crit_base_predictions)
 
 # for visualization purpose -- critical regions
+## predict the surprisal of words in critical regions using the full gam model 
+llama1B_instruct_crit_predictions <- predict(llama1B_instruct_non_crit_model, 
+                                             newdata=rc_rt_prev_crit.llama1B_instruct.data,type="response", se.fit=TRUE)
+
+ggplot(data=data.frame(actual_rt=rc_rt_prev_crit.llama1B_instruct.data$mean_rt,
+                       predicted_rt=llama1B_instruct_crit_predictions$fit),
+       aes(x=actual_rt,
+           y=predicted_rt))+
+  geom_point(size=1)+
+  # scale_x_continuous(limits = c(300,750))+
+  # scale_y_continuous(limits = c(300,750))+
+  geom_smooth(method="gam", formula=y~s(x,bs="cs"),se=TRUE,size=1,color="black")+
+  labs(x="Actual reading time",
+       y="Predicted reading time")
+
+# compute rmse
+rmse_llama1B_instruct <- sqrt(mean((llama1B_instruct_crit_predictions$fit - rc_rt_prev_crit.llama1B_instruct.data$mean_rt)^2))
+rmse_llama1B_instruct
+
 ## create dataframe with equal entries across columns
 llama1B_instruct_crit_new_data <- get_new_df(rc_rt_prev_crit.llama1B_instruct.data, 100, 2)
 
@@ -956,8 +1101,8 @@ gam.check(llama3B_instruct_model)
 
 ## model comparison 
 llama3B_instruct_gam_ll <- logLik.gam(llama3B_instruct_model)
-llama3B_instruct_gam_ll - gam_base_ll
-
+llama3B_instruct_gam_delta_ll <- llama3B_instruct_gam_ll - gam_base_ll
+llama3B_instruct_gam_delta_ll
 
 # for visualization purpose
 ## create the dataframe for prediction and ploting
@@ -980,6 +1125,11 @@ ggplot(data=data.frame(surprisal=rc_rt_prev.llama3B_instruct.data$surprisal,
   geom_smooth(method="gam", formula=y~s(x,bs="cs"),se=TRUE,size=1)+
   labs(x="surprisal",
        y="Reading time")
+
+## cross-validation
+llama3B_instruct_gam_cv <- cv_gam(full_gam, baseline_gam, rc_rt_prev.llama3B_instruct.data)
+rmse_llama3B_instruct_gam_cv <- llama3B_instruct_gam_cv$rmse_vec
+delta_ll_llama3B_instruct_gam_cv <- llama3B_instruct_gam_cv$delta_ll
 
 #### predicting using words outside the critical region ----
 # separate into two dataframes with non-critical (training) and critical (testing) regions
@@ -1030,6 +1180,25 @@ llama3B_instruct_non_crit_base_predictions <- predict(llama3B_instruct_non_crit_
 plot_predictions(llama3B_instruct_non_crit_new_data, llama3B_instruct_non_crit_base_predictions)
 
 # for visualization purpose -- critical regions
+## predict the surprisal of words in critical regions using the full gam model 
+llama3B_instruct_crit_predictions <- predict(llama3B_instruct_non_crit_model, 
+                                             newdata=rc_rt_prev_crit.llama3B_instruct.data,type="response", se.fit=TRUE)
+
+ggplot(data=data.frame(actual_rt=rc_rt_prev_crit.llama3B_instruct.data$mean_rt,
+                       predicted_rt=llama3B_instruct_crit_predictions$fit),
+       aes(x=actual_rt,
+           y=predicted_rt))+
+  geom_point(size=1)+
+  # scale_x_continuous(limits = c(300,750))+
+  # scale_y_continuous(limits = c(300,750))+
+  geom_smooth(method="gam", formula=y~s(x,bs="cs"),se=TRUE,size=1,color="black")+
+  labs(x="Actual reading time",
+       y="Predicted reading time")
+
+# compute rmse
+rmse_llama3B_instruct <- sqrt(mean((llama3B_instruct_crit_predictions$fit - rc_rt_prev_crit.llama3B_instruct.data$mean_rt)^2))
+rmse_llama3B_instruct
+
 ## create dataframe with equal entries across columns
 llama3B_instruct_crit_new_data <- get_new_df(rc_rt_prev_crit.llama3B_instruct.data, 100, 2)
 
@@ -1072,6 +1241,11 @@ pythia1B_model <- gam(full_gam,
 summary(pythia1B_model)
 gam.check(pythia1B_model)
 
+## model comparison 
+pythia1B_gam_ll <- logLik.gam(pythia1B_model)
+pythia1B_gam_delta_ll <- pythia1B_gam_ll - gam_base_ll
+pythia1B_gam_delta_ll
+
 # for visualization purpose
 ## create the dataframe for prediction and ploting
 pythia1B_prob_new_data <- get_new_df(rc_rt_prev.pythia1B.data,100,2)
@@ -1093,6 +1267,11 @@ ggplot(data=data.frame(surprisal=rc_rt_prev.pythia1B.data$surprisal,
   geom_smooth(method="gam", formula=y~s(x,bs="cs"),se=TRUE,size=1)+
   labs(x="surprisal",
        y="Reading time")
+
+## cross-validation
+pythia1B_gam_cv <- cv_gam(full_gam, baseline_gam, rc_rt_prev.pythia1B.data)
+rmse_pythia1B_gam_cv <- pythia1B_gam_cv$rmse_vec
+delta_ll_pythia1B_gam_cv <- pythia1B_gam_cv$delta_ll
 
 #### predicting using words outside the critical region ----
 # separate into two dataframes with non-critical (training) and critical (testing) regions
@@ -1164,8 +1343,114 @@ pythia1B_crit_delta_ll
 
 ### All model summary ----
 model <- c("gpt2", "llama1b", "llama3b", "llama1b-instruct", "llama3b-instruct", "pythia1b")
-loglike <- c(gpt2_crit_delta_ll, llama1B_crit_delta_ll, llama3B_crit_delta_ll, llama1B_instruct_crit_delta_ll, llama3B_instruct_crit_delta_ll, pythia1B_crit_delta_ll)
-delta_ll <- data.frame(model = model, loglike = loglike)
+perplexity <- c(gpt2_perplexity, llama1B_perplexity, llama1B_instruct_perplexity, llama3B_perplexity, llama3B_instruct_perplexity, pythia1B_perplexity)
+
+#### all data ----
+gam_predictions.data <- bind_rows(
+  tibble(
+    model = "gpt2",
+    surprisal = gpt2_prob_new_data$surprisal,
+    mean_rt = gpt2_predictions$fit,
+    se = gpt2_predictions$se.fit
+  ),
+  tibble(
+    model = "llama1B",
+    surprisal = llama1B_prob_new_data$surprisal,
+    mean_rt = llama1B_predictions$fit,
+    se = llama1B_predictions$se.fit
+  ),
+  tibble(
+    model = "llama3B",
+    surprisal = llama3B_prob_new_data$surprisal,
+    mean_rt = llama3B_predictions$fit,
+    se = llama3B_predictions$se.fit
+  ),
+  tibble(
+    model = "llama1B_instruct",
+    surprisal = llama1B_instruct_prob_new_data$surprisal,
+    mean_rt = llama1B_instruct_predictions$fit,
+    se = llama1B_instruct_predictions$se.fit
+  ),
+  tibble(
+    model = "llama3B_instruct",
+    surprisal = llama3B_instruct_prob_new_data$surprisal,
+    mean_rt = llama3B_instruct_predictions$fit,
+    se = llama3B_instruct_predictions$se.fit
+  )
+) %>%
+  arrange(model, surprisal)
+
+gam_prediction_graph <- ggplot(data=gam_predictions.data %>% 
+         filter(model!="pythia1b") %>% 
+         arrange(model, surprisal),
+       aes(x=surprisal, y=mean_rt, color=model, fill=model,group=model))+
+  geom_line(size=1)  +
+  geom_ribbon(
+              aes(ymin=mean_rt-1.96*se,
+                  ymax=mean_rt+1.96*se),
+              alpha=0.3)+ 
+  facet_grid(.~model,scales = "free") +
+  labs(x="Surprisal",
+       y="Reading time") +
+  scale_color_manual(values=cbPalette, guide="none") +
+  scale_fill_manual(values=cbPalette, guide="none")
+gam_prediction_graph
+ggsave(gam_prediction_graph, file="../graphs/gam_prediction_graph.pdf", width=8, height=3)
+
+
+gam_delta_ll <- c(gpt2_gam_delta_ll, llama1B_gam_delta_ll, llama1B_instruct_gam_delta_ll, llama3B_gam_delta_ll, llama3B_instruct_gam_delta_ll, pythia1B_gam_delta_ll)
+gam_delta_ll.data <- data.frame(model=model, delta_ll = gam_delta_ll, perplexity = perplexity) %>% 
+  arrange(model, delta_ll)
+
+gam_delta_ll_graph <- ggplot(gam_delta_ll.data %>% 
+                               filter(model != "pythia1b"),
+                         aes(x=perplexity,
+                             y=delta_ll)) + 
+  geom_smooth(method="lm", formula=y~x,se=TRUE, color="black") +
+  geom_point(aes(color=model),size=5)+
+  labs(x="Perplexity",
+       y="ΔLogLik") +
+  scale_color_manual(values=cbPalette) +
+  theme(legend.text = element_text(size=12), 
+        legend.position = "top")
+gam_delta_ll_graph  
+ggsave(gam_delta_ll_graph, file="../graphs/gam_delta_ll_graph.pdf", width=8, height=4)
+cor(gam_delta_ll, perplexity)
+
+#### cross-validation ----
+gam_delta_ll_cv <- c(delta_ll_gpt2_gam_cv, delta_ll_llama1B_gam_cv, delta_ll_llama1B_instruct_gam_cv, delta_ll_llama3B_gam_cv, delta_ll_llama3B_instruct_gam_cv,delta_ll_pythia1B_gam_cv)
+gam_delta_ll_cv.data <- data.frame(model=model, delta_ll = gam_delta_ll_cv, perplexity = perplexity) %>% 
+  arrange(model, delta_ll)
+gam_delta_ll_cv_summary <- gam_delta_ll_cv.data %>% 
+  group_by(model, perplexity) %>% 
+  summarize(Mean = mean(delta_ll),
+            CILow = ci.low(delta_ll),
+            CIHigh = ci.high(delta_ll)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh)
+
+gam_delta_ll_cv_graph <- ggplot(gam_delta_ll_cv_summary %>% 
+                              filter(model != "pythia1b"),
+                            aes(x=perplexity,
+                                y=Mean)) +
+  geom_smooth(method="lm", formula=y~x,se=TRUE, color="black") +
+  geom_point(aes(color=model),size=5)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax),
+                width=.2, 
+                show.legend = FALSE) +
+  labs(x="Perplexity",
+       y="ΔLogLik") +
+  scale_color_manual(values=cbPalette) +
+  theme(legend.text = element_text(size=10))
+gam_delta_ll_cv_graph 
+ggsave(gam_delta_ll_cv_graph, file="../graphs/gam_delta_ll_cv_graph.pdf", width=8, height=4)
+
+
+
+#### critical regions ---- 
+critical_loglike <- c(gpt2_crit_delta_ll, llama1B_crit_delta_ll, llama3B_crit_delta_ll, llama1B_instruct_crit_delta_ll, llama3B_instruct_crit_delta_ll, pythia1B_crit_delta_ll)
+critical_delta_ll <- data.frame(model = model, delta_ll = critical_loglike)
 
 delta_ll_graph <- ggplot(delta_ll,
                          aes(x=model,
@@ -1222,9 +1507,11 @@ AIC(lm_base)
 AIC(gpt2_lm_full)
 anova(lm_base, gpt2_lm_full,test="LRT")
 
+## model comparison 
 gpt2_lm_ll <- logLik(gpt2_lm_full)
 lm_base_ll <- logLik(lm_base)
-gpt2_lm_ll - lm_base_ll
+gpt2_lm_delta_ll <-gpt2_lm_ll - lm_base_ll
+gpt2_lm_delta_ll
 
 # plot the predictions
 gpt2_predictions <- predict(gpt2_lm_full, newdata=rc_rt_prev.gpt2.data,type="response", se.fit=TRUE)
@@ -1238,6 +1525,11 @@ ggplot(data=data.frame(surprisal=rc_rt_prev.gpt2.data$surprisal,
   # geom_smooth(method="gam",formula=y~s(x,bs="cs"),se=TRUE,size=1)+
   labs(x="Surprisal",
        y="predicted reading time")
+
+## cross-validation
+gpt2_lm_cv <- cv_gam(full_lm, baseline_lm, rc_rt_prev.gpt2.data)
+rmse_gpt2_lm_cv <- gpt2_lm_cv$rmse_vec
+delta_ll_gpt2_lm_cv <- gpt2_lm_cv$delta_ll
 
 #### predicting using words outside the critical region ----
 # separate into two dataframes with non-critical (training) and critical (testing) regions
@@ -1253,7 +1545,7 @@ rc_rt_prev_crit.gpt2.data <- get_prev(rc_rt.gpt2.data,2) %>%
 gpt2_non_crit_lm <- lm(full_lm, data=rc_rt_prev_non_crit.gpt2.data)
 summary(gpt2_non_crit_lm)
 
-# predict the surprisal of words in critical regions using the full lm model
+# predict the surprisal of words in critical regions using the full lm model (non critical)
 gpt2_crit_predictions <- predict(gpt2_non_crit_lm, newdata=rc_rt_prev_crit.gpt2.data,type="response", se.fit=TRUE)
 
 ggplot(data=data.frame(actual_rt=rc_rt_prev_crit.gpt2.data$mean_rt,
@@ -1263,13 +1555,14 @@ ggplot(data=data.frame(actual_rt=rc_rt_prev_crit.gpt2.data$mean_rt,
   geom_point(size=1)+
   # scale_x_continuous(limits = c(300,750))+
   # scale_y_continuous(limits = c(300,750))+
-  geom_smooth(method="lm", formula=y~x,se=TRUE,size=1)+
+  geom_smooth(method="lm", formula=y~x,se=TRUE,size=1,color="black")+
   labs(x="Actual reading time",
        y="Predicted reading time")
 
 get_loglikelihood(gpt2_non_crit_lm, rc_rt_prev_crit.gpt2.data , rc_rt_prev_crit.gpt2.data$mean_rt)
 
 rmse_gpt2 <- sqrt(mean((gpt2_crit_predictions$fit - rc_rt_prev_crit.gpt2.data$mean_rt)^2))
+rmse_gpt2
 mae_gpt2 <- mean(abs(gpt2_crit_predictions$fit - rc_rt_prev_crit.gpt2.data$mean_rt))
 SST_gpt2 <- sum((rc_rt_prev_crit.gpt2.data$mean_rt - mean(rc_rt_prev_crit.gpt2.data$mean_rt))^2)
 SSE_gpt2 <- sum((gpt2_crit_predictions$fit - rc_rt_prev_crit.gpt2.data$mean_rt)^2)
@@ -1308,8 +1601,10 @@ AIC(lm_base)
 AIC(llama1B_lm_full) 
 anova(lm_base, llama1B_lm_full,test="LRT")
 
+## model comparison 
 llama1B_lm_ll <- logLik(llama1B_lm_full)
-llama1B_lm_ll - lm_base_ll
+llama1B_lm_delta_ll <- llama1B_lm_ll - lm_base_ll
+llama1B_lm_delta_ll
 
 # plot the predictions
 llama1B_predictions <- predict(llama1B_lm_full, newdata=rc_rt_prev.llama1B.data,type="response", se.fit=TRUE)
@@ -1323,6 +1618,11 @@ ggplot(data=data.frame(surprisal=rc_rt_prev.llama1B.data$surprisal,
   # geom_smooth(method="gam",formula=y~s(x,bs="cs"),se=TRUE,size=1)+
   labs(x="Surprisal",
        y="predicted reading time")
+
+## cross-validation
+llama1B_lm_cv <- cv_gam(full_lm, baseline_lm, rc_rt_prev.llama1B.data)
+rmse_llama1B_lm_cv <- llama1B_lm_cv$rmse_vec
+delta_ll_llama1B_lm_cv <- llama1B_lm_cv$delta_ll
 
 #### predicting using words outside the critical region ----
 # separate into two dataframes with non-critical (training) and critical (testing) regions
@@ -1395,7 +1695,8 @@ AIC(llama3B_lm_full)
 anova(lm_base, llama3B_lm_full,test="LRT")
 
 llama3B_lm_ll <- logLik(llama3B_lm_full)
-llama3B_lm_ll - lm_base_ll
+llama3B_lm_delta_ll <- llama3B_lm_ll - lm_base_ll
+llama3B_lm_delta_ll
 
 # plot the predictions
 llama3B_predictions <- predict(llama3B_lm_full, newdata=rc_rt_prev.llama3B.data,type="response", se.fit=TRUE)
@@ -1409,6 +1710,11 @@ ggplot(data=data.frame(surprisal=rc_rt_prev.llama3B.data$surprisal,
   # geom_smooth(method="gam",formula=y~s(x,bs="cs"),se=TRUE,size=1)+
   labs(x="Surprisal",
        y="predicted reading time")
+
+## cross-validation
+llama3B_lm_cv <- cv_gam(full_lm, baseline_lm, rc_rt_prev.llama3B.data)
+rmse_llama3B_lm_cv <- llama3B_lm_cv$rmse_vec
+delta_ll_llama3B_lm_cv <- llama3B_lm_cv$delta_ll
 
 #### predicting using words outside the critical region ----
 # separate into two dataframes with non-critical (training) and critical (testing) regions
@@ -1482,7 +1788,8 @@ AIC(llama1B_instruct_lm_full)
 anova(lm_base, llama1B_instruct_lm_full,test="LRT")
 
 llama1B_instruct_lm_ll <- logLik(llama1B_instruct_lm_full)
-llama1B_instruct_lm_ll - lm_base_ll
+llama1B_instruct_lm_delta_ll <- llama1B_instruct_lm_ll - lm_base_ll
+llama1B_instruct_lm_delta_ll
 
 # plot the predictions
 llama1B_instruct_predictions <- predict(llama1B_instruct_lm_full, newdata=rc_rt_prev.llama1B_instruct.data,type="response", se.fit=TRUE)
@@ -1496,6 +1803,11 @@ ggplot(data=data.frame(surprisal=rc_rt_prev.llama1B_instruct.data$surprisal,
   # geom_smooth(method="gam",formula=y~s(x,bs="cs"),se=TRUE,size=1)+
   labs(x="Surprisal",
        y="predicted reading time")
+
+## cross-validation
+llama1B_instruct_lm_cv <- cv_gam(full_lm, baseline_lm, rc_rt_prev.llama1B_instruct.data)
+rmse_llama1B_instruct_lm_cv <- llama1B_instruct_lm_cv$rmse_vec
+delta_ll_llama1B_instruct_lm_cv <- llama1B_instruct_lm_cv$delta_ll
 
 
 #### predicting using words outside the critical region ----
@@ -1570,7 +1882,8 @@ AIC(llama3B_instruct_lm_full)
 anova(lm_base, llama3B_instruct_lm_full,test="LRT")
 
 llama3B_instruct_lm_ll <- logLik(llama3B_instruct_lm_full)
-llama3B_instruct_lm_ll - lm_base_ll
+llama3B_instruct_lm_delta_ll <- llama3B_instruct_lm_ll - lm_base_ll
+llama3B_instruct_lm_delta_ll
 
 # plot the predictions
 llama3B_instruct_predictions <- predict(llama3B_instruct_lm_full, newdata=rc_rt_prev.llama3B_instruct.data,type="response", se.fit=TRUE)
@@ -1585,6 +1898,9 @@ ggplot(data=data.frame(surprisal=rc_rt_prev.llama3B_instruct.data$surprisal,
   labs(x="Surprisal",
        y="predicted reading time")
 
+llama3B_instruct_lm_cv <- cv_gam(full_lm, baseline_lm, rc_rt_prev.llama3B_instruct.data)
+rmse_llama3B_instruct_lm_cv <- llama3B_instruct_lm_cv$rmse_vec
+delta_ll_llama3B_instruct_lm_cv <- llama3B_instruct_lm_cv$delta_ll
 
 #### predicting using words outside the critical region ----
 # separate into two dataframes with non-critical (training) and critical (testing) regions
@@ -1623,3 +1939,49 @@ SST_llama3B_instruct <- sum((rc_rt_prev_crit.llama3B_instruct.data$mean_rt - mea
 SSE_llama3B_instruct <- sum((llama3B_instruct_crit_predictions$fit - rc_rt_prev_crit.llama3B_instruct.data$mean_rt)^2)
 r_squared_test_llama3B_instruct <- 1 - (SSE_llama3B_instruct / SST_llama3B_instruct)
 
+### All model summary ----
+model <- c("gpt2", "llama1b", "llama3b", "llama1b-instruct", "llama3b-instruct")
+perplexity <- c(gpt2_perplexity, llama1B_perplexity, llama1B_instruct_perplexity, llama3B_perplexity, llama3B_instruct_perplexity)
+
+#### all data ----
+lm_delta_ll <- c(gpt2_lm_delta_ll, llama1B_lm_delta_ll, llama1B_instruct_lm_delta_ll, llama3B_lm_delta_ll, llama3B_instruct_lm_delta_ll)
+lm_delta_ll.data <- data.frame(model=model, delta_ll = lm_delta_ll, perplexity = perplexity)
+
+lm_delta_ll_graph <- ggplot(lm_delta_ll.data,
+                             aes(x=perplexity,
+                                 y=delta_ll)) + 
+  geom_point(aes(color=model),size=5)+
+  geom_smooth(method="lm", formula=y~x,se=TRUE, color="black") +
+  labs(x="Perplexity",
+       y="ΔLogLik") +
+  scale_color_manual(values=cbPalette)
+lm_delta_ll_graph  
+ggsave(lm_delta_ll_graph, file="../graphs/lm_delta_ll_graph.pdf", width=8, height=4)
+
+
+#### cross-validation ----
+lm_delta_ll_cv <- c(delta_ll_gpt2_lm_cv, delta_ll_llama1B_lm_cv, delta_ll_llama1B_instruct_lm_cv, delta_ll_llama3B_lm_cv, delta_ll_llama1B_instruct_lm_cv)
+lm_delta_ll_cv.data <- data.frame(model=model, delta_ll = lm_delta_ll_cv, perplexity = perplexity) %>% 
+  arrange(model, delta_ll)
+lm_delta_ll_cv_summary <- lm_delta_ll_cv.data %>% 
+  group_by(model, perplexity) %>% 
+  summarize(Mean = mean(delta_ll),
+            CILow = ci.low(delta_ll),
+            CIHigh = ci.high(delta_ll)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh)
+
+lm_delta_ll_cv_graph <- ggplot(lm_delta_ll_cv_summary,
+                            aes(x=perplexity,
+                                y=Mean)) +
+  geom_smooth(method="lm", formula=y~x,se=TRUE, color="black") +
+  geom_point(aes(color=model),size=5)+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax),
+                width=.2, 
+                show.legend = FALSE) +
+  labs(x="Perplexity",
+       y="ΔLogLik") +
+  scale_color_manual(values=cbPalette)
+lm_delta_ll_cv_graph 
+ggsave(lm_delta_ll_cv_graph, file="../graphs/lm_delta_ll_cv_graph.pdf", width=8, height=4)
