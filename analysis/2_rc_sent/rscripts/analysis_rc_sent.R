@@ -25,10 +25,12 @@ rc_sent.llama1B.data <- read.csv("../../../data/rc_sent/rc_sent_Llama-3.2-1B_1.c
 
 rc_sent.llama1B.data <- rc_sent.llama1B.data %>% 
   select(item_id, verb, sentence_type, attachment, critical_prob) %>% 
+  rename(verb_type = "sentence_type") %>% 
   pivot_wider(names_from = attachment, values_from = critical_prob) %>% 
   mutate(logodds = high-low,
-         high_prob = exp(high)/1+exp(high),
-         low_prob = exp(low)/1+exp(low))
+         surp_high = -high,
+         surp_low = -low,
+         surp_diff = surp_high-surp_low)
 
 ## Llama3.2-1B-instruct ----
 rc_sent.llama1B.instruct.data <- read.csv("../../../data/rc_sent/rc_sent_Llama-3.2-1B-Instruct_1.csv", header=TRUE) %>% 
@@ -36,10 +38,12 @@ rc_sent.llama1B.instruct.data <- read.csv("../../../data/rc_sent/rc_sent_Llama-3
 
 rc_sent.llama1B.instruct.data <- rc_sent.llama1B.instruct.data %>% 
   select(item_id, verb, sentence_type, attachment, critical_prob) %>% 
+  rename(verb_type = "sentence_type") %>% 
   pivot_wider(names_from = attachment, values_from = critical_prob) %>% 
   mutate(logodds = high-low,
-         high_prob = exp(high)/1+exp(high),
-         low_prob = exp(low)/1+exp(low))
+         surp_high = -high,
+         surp_low = -low,
+         surp_diff = surp_high-surp_low)
 
 ## Llama3.2-3B ----
 rc_sent.llama3B.data <- read.csv("../../../data/rc_sent/rc_sent_Llama-3.2-3B_1.csv", header=TRUE) %>% 
@@ -47,10 +51,12 @@ rc_sent.llama3B.data <- read.csv("../../../data/rc_sent/rc_sent_Llama-3.2-3B_1.c
 
 rc_sent.llama3B.data <- rc_sent.llama3B.data %>% 
   select(item_id, verb, sentence_type, attachment, critical_prob) %>% 
+  rename(verb_type = "sentence_type") %>% 
   pivot_wider(names_from = attachment, values_from = critical_prob) %>% 
   mutate(logodds = high-low,
-         high_prob = exp(high)/1+exp(high),
-         low_prob = exp(low)/1+exp(low))
+         surp_high = -high,
+         surp_low = -low,
+         surp_diff = surp_high-surp_low)
 
 
 ## Llama3.2-3B-Instruct ----
@@ -59,10 +65,12 @@ rc_sent.llama3B.instruct.data <- read.csv("../../../data/rc_sent/rc_sent_Llama-3
 
 rc_sent.llama3B.instruct.data <- rc_sent.llama3B.instruct.data %>% 
   select(item_id, verb, sentence_type, attachment, critical_prob) %>% 
+  rename(verb_type = "sentence_type") %>% 
   pivot_wider(names_from = attachment, values_from = critical_prob) %>% 
   mutate(logodds = high-low,
-         high_prob = exp(high)/1+exp(high),
-         low_prob = exp(low)/1+exp(low))
+         surp_high = -high,
+         surp_low = -low,
+         surp_diff = surp_high-surp_low)
 
 
 ## gpt2 ----
@@ -71,10 +79,12 @@ rc_sent.gpt2.data <- read.csv("../../../data/rc_sent/rc_sent_gpt2_2.csv", header
 
 rc_sent.gpt2.data <- rc_sent.gpt2.data %>% 
   select(item_id, verb, sentence_type, attachment, critical_prob) %>% 
+  rename(verb_type = "sentence_type") %>% 
   pivot_wider(names_from = attachment, values_from = critical_prob) %>% 
   mutate(logodds = high-low,
-         high_prob = exp(high)/1+exp(high),
-         low_prob = exp(low)/1+exp(low))
+         surp_high = -high,
+         surp_low = -low,
+         surp_diff = surp_high-surp_low)
 
 
 ## all models ----
@@ -85,11 +95,31 @@ rc_sent.data <- bind_rows(lst(rc_sent.llama1B.data,rc_sent.llama1B.instruct.data
                          model == "rc_sent.llama3B.instruct.data" ~ "3B-Instruct",
                          model == "rc_sent.gpt2.data" ~ "GPT2"))
 
+# mean of log prob difference
+rc_sent_mean <- rc_sent.data %>% 
+  group_by(model, verb_type) %>% 
+  summarize(Mean = mean(logodds),
+            CILow = ci.low(logodds),
+            CIHigh = ci.high(logodds)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh)
+
+# mean of surp difference
+rc_sent_surp_mean <- rc_sent.data %>% 
+  group_by(model, verb_type) %>% 
+  summarize(Mean = mean(surp_diff),
+            CILow = ci.low(surp_diff),
+            CIHigh = ci.high(surp_diff)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh)
+
 # 2. Plot ----
 ## Llama3.2-1B ----
 rc_sent_1B_graph <- ggplot(rc_sent.llama1B.data,
                        aes(x=logodds,
-                           fill=sentence_type)) +
+                           fill=verb_type)) +
   geom_density(alpha=0.6) +
   theme_bw() +
   scale_fill_brewer(palette = "Dark2") +
@@ -113,7 +143,7 @@ ggsave(rc_sent_graph, file="../graphs/rc_sent_llama1B_1.pdf", width=8, height=4)
 ## Llama3.2-3B ----
 rc_sent_3B_graph <- ggplot(rc_sent.llama3B.data,
                            aes(x=logodds,
-                               fill=sentence_type)) +
+                               fill=verb_type)) +
   geom_density(alpha=0.6) +
   theme_bw() +
   scale_fill_brewer(palette = "Dark2") +
@@ -133,7 +163,7 @@ ggsave(rc_sent_3B_graph, file="../graphs/rc_sent_llama3B_1.pdf", width=8, height
 ## gpt2 ----
 rc_sent_gpt2_graph <- ggplot(rc_sent.gpt2.data,
                            aes(x=logodds,
-                               fill=sentence_type)) +
+                               fill=verb_type)) +
   geom_density(alpha=0.6) +
   theme_bw() +
   scale_fill_brewer(palette = "Dark2") +
@@ -151,12 +181,39 @@ rc_sent_gpt2_graph
 ggsave(rc_sent_gpt2_graph, file="../graphs/rc_sent_gpt2_1.pdf", width=8, height=4)
 
 ## combined ----
+## line graph for diff ----
+rc_line_graph <- ggplot(rc_sent_mean,
+                        aes(x=verb_type,y=Mean)) +
+  geom_point(aes(color=verb_type),
+             stat="identity",
+             alpha=0.7,
+             size=2) +
+  geom_hline(yintercept=0.5, linetype="dashed", color = "grey") +
+  geom_line(aes(group=1),linetype="dotted") +
+  geom_errorbar(aes(ymin=YMin,ymax=YMax,color=verb_type),
+                width=.2, 
+                show.legend = FALSE) +
+  scale_color_brewer(palette = "Dark2", guide="none") +
+  theme_bw() +
+  facet_grid(. ~ model) + 
+  labs(y = "Mean log probability\ndifference (high - low)",
+       x = "Verb type") +
+  theme(legend.position = "top",
+        axis.text.x = element_text(size = 12),
+        axis.title.x = element_text(size = 14),
+        axis.text.y = element_text(size = 12),
+        strip.text = element_text(size = 12),
+        axis.title.y = element_text(size = 12))
+rc_line_graph
+ggsave(rc_line_graph, file="../graphs/rc_line_graph.pdf", width=8, height=3)
+
+
 # rc_sent.data$model <- factor(rc_sent.data$model, levels=c("Llama3.2-1B", "Llama3.2-1B-Instruct", "Llama3.2-3B", "Llama3.2-3B-Instruct", "GPT2"))
 # rc_sent.data$model <- factor(rc_sent.data$model, levels=c("GPT2","Llama3.2-1B", "Llama3.2-1B-Instruct", "Llama3.2-3B", "Llama3.2-3B-Instruct")) 
 # rc_sent.data$model <- factor(rc_sent.data$model, levels=c("GPT2","1B", "1B-Instruct", "3B", "3B-Instruct")) 
 rc_sent_graph <- ggplot(rc_sent.data,
                            aes(x=logodds,
-                               fill=sentence_type)) +
+                               fill=verb_type)) +
   geom_density(alpha=0.6) +
   theme_bw() +
   scale_fill_brewer(palette = "Dark2") +
@@ -193,12 +250,9 @@ ggsave(rc_sent_graph, file="../graphs/rc_sent_all_models_2.pdf", width=7, height
 
 # 3. Statistical analysis ----
 ## Llama3.2-1B ----
-llama1B_analysis <- lmer(logodds ~ sentence_type + (1|item_id),
+llama1B_analysis <- lmer(logodds ~ verb_type + (1|item_id),
                          rc_sent.llama1B.data)
 summary(llama1B_analysis)
-
-rc_sent.llama1B.data <- rc_sent.llama1B.data %>% 
-  rename(verb_type = "sentence_type")
 
 llama1B_bayesian_default_prior <- brm(logodds ~ verb_type + (1|item_id),
                                     data=rc_sent.llama1B.data,
@@ -212,12 +266,10 @@ llama1B_bayesian_default_prior <- brm(logodds ~ verb_type + (1|item_id),
 summary(llama1B_bayesian_default_prior)
 
 ## Llama3.2-1B-Instruct ----
-llama1B_instruct_analysis <- lmer(logodds ~ sentence_type + (1|item_id),
+llama1B_instruct_analysis <- lmer(logodds ~ verb_type + (1|item_id),
                          rc_sent.llama1B.instruct.data)
 summary(llama1B_instruct_analysis)
 
-rc_sent.llama1B.instruct.data <- rc_sent.llama1B.instruct.data %>% 
-  rename(verb_type="sentence_type")
 llama1B_instruct_bayesian_default_prior <- brm(logodds ~ verb_type + (1|item_id),
                                       data=rc_sent.llama1B.instruct.data,
                                       iter=8000,
@@ -230,12 +282,9 @@ llama1B_instruct_bayesian_default_prior <- brm(logodds ~ verb_type + (1|item_id)
 summary(llama1B_instruct_bayesian_default_prior)
 
 ## Llama3.2-3B ----
-llama3B_analysis <- lmer(logodds ~ sentence_type + (1|item_id),
+llama3B_analysis <- lmer(logodds ~ verb_type + (1|item_id),
                          rc_sent.llama3B.data)
 summary(llama3B_analysis)
-
-rc_sent.llama3B.data <- rc_sent.llama3B.data %>% 
-  rename(verb_type = "sentence_type")
 
 llama3B_bayesian_default_prior <- brm(logodds ~ verb_type + (1|item_id),
                                       data=rc_sent.llama3B.data,
@@ -249,12 +298,9 @@ llama3B_bayesian_default_prior <- brm(logodds ~ verb_type + (1|item_id),
 summary(llama3B_bayesian_default_prior)
 
 ## Llama3.2-3B-Intsruct ----
-llama3B_instruct_analysis <- lmer(logodds ~ sentence_type + (1|item_id),
+llama3B_instruct_analysis <- lmer(logodds ~ verb_type + (1|item_id),
                          rc_sent.llama3B.instruct.data)
 summary(llama3B_instruct_analysis)
-
-rc_sent.llama3B.instruct.data <- rc_sent.llama3B.instruct.data %>% 
-  rename(verb_type = "sentence_type")
 
 llama3B_instruct_bayesian_default_prior <- brm(logodds ~ verb_type + (1|item_id),
                                       data=rc_sent.llama3B.instruct.data,
@@ -268,9 +314,6 @@ llama3B_instruct_bayesian_default_prior <- brm(logodds ~ verb_type + (1|item_id)
 summary(llama3B_instruct_bayesian_default_prior)
 
 ## gpt2 ----
-rc_sent.gpt2.data <- rc_sent.gpt2.data %>% 
-  rename(verb_type = "sentence_type")
-
 gpt2_analysis <- lmer(logodds ~ verb_type + (1|item_id),
                          rc_sent.gpt2.data)
 summary(gpt2_analysis)
