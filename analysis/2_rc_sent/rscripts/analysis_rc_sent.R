@@ -188,7 +188,7 @@ rc_line_graph <- ggplot(rc_sent_mean,
              stat="identity",
              alpha=0.7,
              size=2) +
-  geom_hline(yintercept=0.5, linetype="dashed", color = "grey") +
+  geom_hline(yintercept=0, linetype="dashed", color = "grey") +
   geom_line(aes(group=1),linetype="dotted") +
   geom_errorbar(aes(ymin=YMin,ymax=YMax,color=verb_type),
                 width=.2, 
@@ -205,7 +205,7 @@ rc_line_graph <- ggplot(rc_sent_mean,
         strip.text = element_text(size = 12),
         axis.title.y = element_text(size = 12))
 rc_line_graph
-ggsave(rc_line_graph, file="../graphs/rc_line_graph.pdf", width=8, height=3)
+ggsave(rc_line_graph, file="../graphs/rc_sent_line_graph.pdf", width=8, height=4)
 
 
 # rc_sent.data$model <- factor(rc_sent.data$model, levels=c("Llama3.2-1B", "Llama3.2-1B-Instruct", "Llama3.2-3B", "Llama3.2-3B-Instruct", "GPT2"))
@@ -219,16 +219,6 @@ rc_sent_graph <- ggplot(rc_sent.data,
   scale_fill_brewer(palette = "Dark2") +
   geom_vline(xintercept = 0, linetype="dotted") +
   labs(fill = "Verb type") +
-  # annotation_custom(grob = linesGrob(arrow=arrow(type="open", ends="both",
-  #                                                length=unit(2,"mm")), 
-  #                                    gp=gpar(col="black", lwd=1.5)), xmin = -4.3, xmax = 0.8, ymin = -0.055, ymax = -0.055) +
-  # annotation_custom(grob = grid::textGrob(label = "Prefer high\nattachment", hjust=0, gp=gpar(col="black", cex=0.8)),xmin = 0.7, xmax = 1.2, ymin = -0.065, ymax = -0.065) +
-  # annotation_custom(grob = grid::textGrob(label = "Prefer low\nattachment", hjust=0, gp=gpar(col="black", cex=0.8)),xmin = -5.6, xmax = -5.1, ymin = -0.065, ymax = -0.065) +
-  # annotation_custom(grob = linesGrob(arrow=arrow(type="open", ends="both",
-  #                                                length=unit(2,"mm")), 
-  #                                    gp=gpar(col="black", lwd=1.5)), xmin = -4.3, xmax = 1.8, ymin = -0.1, ymax = -0.1) +
-  # annotation_custom(grob = grid::textGrob(label = "Prefer high", hjust=0, gp=gpar(col="black", cex=0.8)),xmin = 2, xmax = 2.5, ymin = -0.09, ymax = -0.09) +
-  # annotation_custom(grob = grid::textGrob(label = "Prefer low", hjust=0, gp=gpar(col="black", cex=0.8)),xmin = -5.6, xmax = -5.1, ymin = -0.09, ymax = -0.09) +
   coord_cartesian(clip="off") +
   facet_wrap(~model, nrow=2) +
   facet_grid(model~.) +
@@ -297,7 +287,11 @@ llama3B_bayesian_default_prior <- brm(logodds ~ verb_type + (1|item_id),
                                       seed=1024)
 summary(llama3B_bayesian_default_prior)
 
-## Llama3.2-3B-Intsruct ----
+## Llama3.2-3B-Instruct ----
+rc_sent.llama3B.instruct.data <- rc_sent.llama3B.instruct.data %>%
+  mutate(verb_type=fct_relevel(verb_type, "IC"))
+
+# contrasts(rc_sent.llama3B.instruct.data$verb_type)=contr.sum(2)
 llama3B_instruct_analysis <- lmer(logodds ~ verb_type + (1|item_id),
                          rc_sent.llama3B.instruct.data)
 summary(llama3B_instruct_analysis)
@@ -328,3 +322,161 @@ gpt2_bayesian_default_prior <- brm(logodds ~ verb_type + (1|item_id),
                                                file="../cache/gpt2_default_prior",
                                                seed=1024)
 summary(gpt2_bayesian_default_prior)
+
+# 4. Exploratory analyses ----
+## Llama3.2-1B ----
+rc_sent.llama1B.data.logprobs <- rc_sent.llama1B.data %>% 
+  select(-c(logodds, surp_high, surp_low, surp_diff)) %>% 
+  pivot_longer(cols=c(low, high),
+               names_to="attachment",
+               values_to="logprobs") %>% 
+  mutate(verb_type=factor(verb_type),
+         attachment=factor(attachment))
+
+# rc_sent.llama1B.summary.logprobs <- rc_sent.llama1B.data.logprobs %>% 
+#   group_by(verb_type, attachment) %>% 
+#   summarize(Mean = mean(logprobs),
+#             CILow = ci.low(logprobs),
+#             CIHigh = ci.high(logprobs)) %>% 
+#   ungroup() %>% 
+#   mutate(YMin = Mean-CILow,
+#          YMax = Mean+CIHigh)
+
+contrasts(rc_sent.llama1B.data.logprobs$verb_type) = contr.sum(2)
+contrasts(rc_sent.llama1B.data.logprobs$attachment) = contr.sum(2)
+llama1B_analysis_exp <- lmer(logprobs ~ verb_type*attachment + (1|item_id),
+                             rc_sent.llama1B.data.logprobs)
+summary(llama1B_analysis_exp)
+llama1B_emms <- emmeans(llama1B_analysis_exp,specs = ~ verb_type | attachment)
+pairs(llama1B_emms)
+
+## Llama3.2-1B-Instruct ----
+rc_sent.llama1B.instruct.data.logprobs <- rc_sent.llama1B.instruct.data %>% 
+  select(-c(logodds, surp_high, surp_low, surp_diff)) %>% 
+  pivot_longer(cols=c(low, high),
+               names_to="attachment",
+               values_to="logprobs") %>% 
+  mutate(verb_type=factor(verb_type),
+         attachment=factor(attachment))
+
+contrasts(rc_sent.llama1B.instruct.data.logprobs$verb_type) = contr.sum(2)
+contrasts(rc_sent.llama1B.instruct.data.logprobs$attachment) = contr.sum(2)
+llama1B_instruct_analysis_exp <- lmer(logprobs ~ verb_type*attachment + (1|item_id),
+                             rc_sent.llama1B.instruct.data.logprobs)
+summary(llama1B_instruct_analysis_exp)
+llama1B_instruct_emms <- emmeans(llama1B_instruct_analysis_exp,specs = ~ attachment | verb_type)
+pairs(llama1B_instruct_emms)
+
+## Llama3.2-3B ----
+rc_sent.llama3B.data.logprobs <- rc_sent.llama3B.data %>% 
+  select(-c(logodds, surp_high, surp_low, surp_diff)) %>% 
+  pivot_longer(cols=c(low, high),
+               names_to="attachment",
+               values_to="logprobs") %>% 
+  mutate(verb_type=factor(verb_type),
+         attachment=factor(attachment))
+
+contrasts(rc_sent.llama3B.data.logprobs$verb_type) = contr.sum(2)
+contrasts(rc_sent.llama3B.data.logprobs$attachment) = contr.sum(2)
+llama3B_analysis_exp <- lmer(logprobs ~ verb_type + attachment + verb_type*attachment + (1|item_id),
+                             rc_sent.llama3B.data.logprobs)
+summary(llama3B_analysis_exp)
+llama3B_emms <- emmeans(llama1B_analysis_exp,specs = ~ verb_type | attachment)
+pairs(llama3B_emms)
+
+## Llama3.2-3B-Instruct ----
+rc_sent.llama3B.instruct.data.logprobs <- rc_sent.llama3B.instruct.data %>% 
+  select(-c(logodds, surp_high, surp_low, surp_diff)) %>% 
+  pivot_longer(cols=c(low, high),
+               names_to="attachment",
+               values_to="logprobs") %>% 
+  mutate(verb_type=factor(verb_type),
+         attachment=factor(attachment))
+
+contrasts(rc_sent.llama3B.instruct.data.logprobs$verb_type) = contr.sum(2)
+contrasts(rc_sent.llama3B.instruct.data.logprobs$attachment) = contr.sum(2)
+llama3B_instruct_analysis_exp <- lmer(logprobs ~ verb_type*attachment + (1|item_id),
+                                      rc_sent.llama3B.instruct.data.logprobs)
+summary(llama3B_instruct_analysis_exp)
+llama3B_instruct_emms <- emmeans(llama3B_instruct_analysis_exp,specs = ~ attachment | verb_type)
+pairs(llama3B_instruct_emms)
+
+## gpt2 ----
+rc_sent.gpt2.data.logprobs <- rc_sent.gpt2.data %>% 
+  select(-c(logodds, surp_high, surp_low, surp_diff)) %>% 
+  pivot_longer(cols=c(low, high),
+               names_to="attachment",
+               values_to="logprobs")
+
+gpt2_analysis_exp <- lmer(logprobs ~ verb_type*attachment + (1|item_id),
+                          rc_sent.gpt2.data.logprobs)
+summary(gpt2_analysis_exp)
+
+## all models ----
+rc_sent.data.logprobs <- bind_rows(lst(rc_sent.llama1B.data.logprobs,rc_sent.llama1B.instruct.data.logprobs, rc_sent.llama3B.data.logprobs,rc_sent.llama3B.instruct.data.logprobs,rc_sent.gpt2.data.logprobs), .id="model") %>% 
+  mutate(model=case_when(model == "rc_sent.llama1B.data.logprobs" ~ "1B",
+                         model == "rc_sent.llama1B.instruct.data.logprobs" ~ "1B-Instruct",
+                         model == "rc_sent.llama3B.data.logprobs" ~ "3B",
+                         model == "rc_sent.llama3B.instruct.data.logprobs" ~ "3B-Instruct",
+                         model == "rc_sent.gpt2.data.logprobs" ~ "GPT2"))%>% 
+  mutate(item_attachment=paste(item_id, attachment, sep="_"))
+
+# mean of log prob difference
+rc_sent_logprobs_mean <- rc_sent.data.logprobs %>% 
+  group_by(model, verb_type, attachment) %>% 
+  summarize(Mean = mean(logprobs),
+            CILow = ci.low(logprobs),
+            CIHigh = ci.high(logprobs)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh,
+         condition=paste(verb_type, attachment, sep="_"))
+
+# rc_sent_logprobs_graph <- ggplot(rc_sent_logprobs_mean %>% 
+#                                    mutate(condition=fct_relevel(condition, "IC_high", "nonIC_high", "IC_low", "nonIC_low")),
+rc_sent_logprobs_graph <- ggplot(rc_sent.data.logprobs %>% 
+                                   mutate(condition=paste(verb_type, attachment, sep="_")),
+                                 aes(x=condition,
+                                     y=logprobs,
+                                     fill=verb_type)) +
+  geom_bar(data=rc_sent_logprobs_mean,
+           aes(x=condition,
+               y=Mean,
+               fill=verb_type),
+           alpha=0.6,
+           position=position_dodge(),
+           stat="identity") +
+  geom_errorbar(data=rc_sent_logprobs_mean,
+                aes(y=Mean,ymin=YMin,ymax=YMax),
+                position=position_dodge(width=0.9),
+                width=.2, 
+                show.legend = FALSE) +
+  geom_point(position=position_dodge(width=0.9),
+             alpha=0.4)+
+  # geom_label_repel(rc_sent.data.logprobs,
+  #                  aes(label=verb),
+  #                  color="black",fill="white",
+  #                  box.padding=0.1,
+  #                  segment.size=0.2, nudge_x=0.16, direction="y")+
+  geom_line(aes(group=verb),
+            color = "black",
+            alpha = 0.4,
+            # size=0.4,
+            linetype = "dashed") +
+  theme_bw() +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(fill = "Verb type") +
+  facet_wrap(~model, nrow=2) +
+  facet_grid(model~.) +
+  theme(strip.text.y = element_text(size = 9),
+        axis.title.x = element_text(size=14),
+        axis.text.x = element_text(size = 12),
+        axis.title.y = element_text(size=14),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size=14),
+        legend.text = element_text(size=12),
+        legend.position = "top")+
+  labs(y = "log probabilities",
+       x = "condition type")
+rc_sent_logprobs_graph
+ggsave(rc_sent_logprobs_graph, file="../graphs/rc_sent_logprobs_graph_by_verb.pdf", width=7, height=5)

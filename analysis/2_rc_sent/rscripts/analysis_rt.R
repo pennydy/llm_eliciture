@@ -460,11 +460,11 @@ baseline_prev3_gam = mean_rt ~ te(wordlen, bs="cr") +
   te(prev1_wordlen, bs = "cr") +
   te(prev2_wordlen, bs = "cr") + 
   te(prev3_wordlen, bs = "cr") +
-  te(log_freq, bs = "cr") + 
   te(surp_sum, bs = "cr") +
   te(prev1_surpsum, bs = "cr") +
   te(prev2_surpsum, bs = "cr") +
   te(prev3_surpsum, bs = "cr")
+  # te(log_freq, bs = "cr") + 
   # te(prev1_freq, bs = "cr") +
   # te(prev2_freq, bs = "cr") +
   # te(prev3_freq, bs = "cr")
@@ -491,7 +491,7 @@ baseline_gam = mean_rt ~ te(wordlen, bs="cr") +
   te(surp_sum, bs = "cr") +
   te(prev1_surpsum, bs = "cr") +
   te(prev2_surpsum, bs = "cr")
-  # te(log_freq, bs = "cr") +
+  # te(log_freq, bs = "cr") + # use surpsum instead of log freq
   # te(prev1_freq, bs = "cr") +
   # te(prev2_freq, bs = "cr")
 full_gam = mean_rt ~ s(surprisal, bs="cr", k=5) + 
@@ -503,7 +503,7 @@ full_gam = mean_rt ~ s(surprisal, bs="cr", k=5) +
   te(surp_sum, bs="cr") +
   te(prev1_surpsum, bs = "cr") +
   te(prev2_surpsum, bs = "cr")
-  # te(log_freq, bs="cr") +
+  # te(log_freq, bs="cr") + # use surpsum instead of log freq
   # te(prev1_freq, bs="cr") +
   # te(prev2_freq, bs="cr")
 
@@ -796,6 +796,7 @@ ggplot(data=data.frame(actual_rt=rc_rt_prev_crit.llama1B.data$mean_rt,
 # compute rmse
 rmse_llama1B <- sqrt(mean((llama1B_crit_predictions$fit - rc_rt_prev_crit.llama1B.data$mean_rt)^2))
 rmse_llama1B
+
 ## create dataframe with equal entries across columns
 llama1B_crit_new_data <- get_new_df(rc_rt_prev_crit.llama1B.data, 100, 2)
 
@@ -843,7 +844,7 @@ llama3B_prob_new_data <- get_new_df(rc_rt_prev.llama3B.data, 100, 2)
 llama3B_predictions <- predict(llama3B_model, newdata=llama3B_prob_new_data,type="response",
                                se.fit=TRUE)
 ## plot the predictions
-llama3B_rt_graph k<- plot_predictions(llama3B_prob_new_data,llama3B_predictions)
+llama3B_rt_graph <- plot_predictions(llama3B_prob_new_data,llama3B_predictions)
 llama3B_rt_graph
 ggsave(llama3B_rt_graph, file="../graphs/llama3B_rt_graph.pdf", width=8, height=4)
 
@@ -1342,37 +1343,37 @@ pythia1B_crit_delta_ll <- pythia1B_crit_ll - pythia1B_crit_base_ll
 pythia1B_crit_delta_ll
 
 ### All model summary ----
-model <- c("gpt2", "llama1b", "llama3b", "llama1b-instruct", "llama3b-instruct", "pythia1b")
+model <- c("GPT2", "1B", "3B", "1B-Instruct", "3B-Instruct", "pythia1b")
 perplexity <- c(gpt2_perplexity, llama1B_perplexity, llama1B_instruct_perplexity, llama3B_perplexity, llama3B_instruct_perplexity, pythia1B_perplexity)
 
 #### all data ----
 gam_predictions.data <- bind_rows(
   tibble(
-    model = "gpt2",
+    model = "GPT2",
     surprisal = gpt2_prob_new_data$surprisal,
     mean_rt = gpt2_predictions$fit,
     se = gpt2_predictions$se.fit
   ),
   tibble(
-    model = "llama1B",
+    model = "1B",
     surprisal = llama1B_prob_new_data$surprisal,
     mean_rt = llama1B_predictions$fit,
     se = llama1B_predictions$se.fit
   ),
   tibble(
-    model = "llama3B",
+    model = "3B",
     surprisal = llama3B_prob_new_data$surprisal,
     mean_rt = llama3B_predictions$fit,
     se = llama3B_predictions$se.fit
   ),
   tibble(
-    model = "llama1B_instruct",
+    model = "1B-Instruct",
     surprisal = llama1B_instruct_prob_new_data$surprisal,
     mean_rt = llama1B_instruct_predictions$fit,
     se = llama1B_instruct_predictions$se.fit
   ),
   tibble(
-    model = "llama3B_instruct",
+    model = "3B-Instruct",
     surprisal = llama3B_instruct_prob_new_data$surprisal,
     mean_rt = llama3B_instruct_predictions$fit,
     se = llama3B_instruct_predictions$se.fit
@@ -1409,10 +1410,15 @@ gam_delta_ll_graph <- ggplot(gam_delta_ll.data %>%
   geom_smooth(method="lm", formula=y~x,se=TRUE, color="black") +
   geom_point(aes(color=model),size=5)+
   labs(x="Perplexity",
-       y="ΔLogLik") +
+       y="ΔLogLik") 
   scale_color_manual(values=cbPalette) +
   theme(legend.text = element_text(size=12), 
-        legend.position = "top")
+        legend.position = "top",
+        axis.text.x = element_text(size = 12),
+        axis.title.x = element_text(size = 14),
+        axis.text.y = element_text(size = 12),
+        strip.text = element_text(size = 12),
+        axis.title.y = element_text(size = 12))
 gam_delta_ll_graph  
 ggsave(gam_delta_ll_graph, file="../graphs/gam_delta_ll_graph.pdf", width=8, height=4)
 cor(gam_delta_ll, perplexity)
@@ -1452,7 +1458,7 @@ ggsave(gam_delta_ll_cv_graph, file="../graphs/gam_delta_ll_cv_graph.pdf", width=
 critical_loglike <- c(gpt2_crit_delta_ll, llama1B_crit_delta_ll, llama3B_crit_delta_ll, llama1B_instruct_crit_delta_ll, llama3B_instruct_crit_delta_ll, pythia1B_crit_delta_ll)
 critical_delta_ll <- data.frame(model = model, delta_ll = critical_loglike)
 
-delta_ll_graph <- ggplot(delta_ll,
+delta_ll_graph <- ggplot(elta_ll,
                          aes(x=model,
                              y=loglike)) + 
   geom_point()+
