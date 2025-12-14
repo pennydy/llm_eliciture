@@ -1,11 +1,26 @@
 .DS_Store
 
 stimuli.py
+test_model.py
+pronoun_llama.py
+layer_model.py
 .Rproj.user
 # writings/*
 updates/*
 test_files/*
 llm_env/*
+cache/*
+offload/*
+
+# cache brms models
+analysis/1_comprehension/cache/*
+analysis/1_comprehension_sent/cache/*
+analysis/2_rc/cache/*
+analysis/2_rc_sent/cache/*
+
+# old graphs and scripts
+analysis/graphs/*
+analysis/rscripts/*
 
 # work-in-progress scripts
 llama_model.py
@@ -16,6 +31,13 @@ analysis/graphs/*
 analysis/scripts/*
 
 # writings
-writings/SCiL_llm_elicitures.pdf
+writings/SCiL_llm_elicitures_abstract.pdf
 writings/dolarge_0203.pdf
+writings/camp_talk.key
+writings/cogsci_poster.key
+writings/COLM_rt_poster.key
+writings/SCiL_llm_eliciture_poster.key
+
+
+
 

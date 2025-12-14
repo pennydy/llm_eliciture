@@ -38,11 +38,10 @@ rc_rt.gpt2.data <- left_join(rc_rt.gpt2.data, frequency.data, by=c("word","frequ
   rename(frequency="frequency1",
          log_freq="log_freq1")
 
-gpt2_perplexity <- rc_rt.gpt2.data %>% 
-  summarize(mean=mean(surprisal),
-            perplexity=exp(mean)) %>% 
-  pull(perplexity)
-gpt2_perplexity
+# perplexity based on the stimuli in this exp
+gpt2_perplexity <- 5.536873862777304
+# perplexity based on natural stories (futrell et al. 2021) for sanity check
+# gpt2_perplexity <- 4.359453969447
   
 rc_rt.gpt2.summary <- rc_rt.gpt2.data %>% 
   # filter(!crit %in% c("NONE", "SUBJ", "RC_VERB+3", "RC_VERB+4")) %>% 
@@ -65,16 +64,17 @@ rc_rt.llama1B.data <- read.csv("../../../data/rc_rt/rc_rt_combined_Llama-3.2-1B_
          crit = if_else(crit == "NONE", "RC_VERB+5", crit)) %>% 
   mutate(crit = factor(crit))
 
-rc_rt.llama1B.data <- left_join(rc_rt.llama1B.data, frequency.data, by=c("word","frequency","log_freq")) %>% 
+rc_rt.llama1B.data <- rc_rt.llama1B.data %>% 
+  left_join(frequency.data, by=c("word","frequency","log_freq")) %>% 
   select(-c("frequency", "log_freq", "surp1",  "word1", "word2", "surp2",  "frequency2", "word3", "surp3", "frequency3")) %>% 
   rename(frequency="frequency1",
          log_freq="log_freq1")
 
-llama1B_perplexity <- rc_rt.llama1B.data %>% 
-  summarize(mean=mean(surprisal),
-            perplexity=exp(mean)) %>% 
-  pull(perplexity)
-llama1B_perplexity
+# perplexity based on the stimuli in this exp
+llama1B_perplexity <- 4.997065356674766
+# perplexity based on natural stories (futrell et al. 2021) for sanity check
+# llama1B_perplexity <- 3.7358035353811445
+
 
 rc_rt.llama1B.summary <- rc_rt.llama1B.data %>% 
   # filter(!crit %in% c("NONE", "SUBJ", "RC_VERB+3", "RC_VERB+4")) %>% 
@@ -102,11 +102,10 @@ rc_rt.llama3B.data <- left_join(rc_rt.llama3B.data, frequency.data, by=c("word",
   rename(frequency="frequency1",
          log_freq="log_freq1")
 
-llama3B_perplexity <- rc_rt.llama3B.data %>% 
-  summarize(mean=mean(surprisal),
-            perplexity=exp(mean)) %>% 
-  pull(perplexity)
-llama3B_perplexity
+# perplexity based on the stimuli in this exp
+llama3B_perplexity <- 4.922765130005042
+# perplexity based on natural stories (futrell et al. 2021) for sanity check
+# llama3B_perplexity <- 3.599889468050133
 
 rc_rt.llama3B.summary <- rc_rt.llama3B.data %>% 
   # filter(!crit %in% c("NONE", "SUBJ", "RC_VERB+3", "RC_VERB+4")) %>% 
@@ -134,11 +133,10 @@ rc_rt.llama1B_instruct.data <- left_join(rc_rt.llama1B_instruct.data, frequency.
   rename(frequency="frequency1",
          log_freq="log_freq1")
 
-llama1B_instruct_perplexity <- rc_rt.llama1B_instruct.data %>% 
-  summarize(mean=mean(surprisal),
-            perplexity=exp(mean)) %>% 
-  pull(perplexity)
-llama1B_instruct_perplexity
+# perplexity based on the stimuli in this exp
+llama1B_instruct_perplexity <- 5.011721920477061
+# perplexity based on natural stories (futrell et al. 2021) for sanity check
+# llama1B_instruct_perplexity <- 3.992406736140558
 
 rc_rt.llama1B_instruct.summary <- rc_rt.llama1B_instruct.data %>% 
   # filter(!crit %in% c("NONE", "SUBJ", "RC_VERB+3", "RC_VERB+4")) %>% 
@@ -166,11 +164,10 @@ rc_rt.llama3B_instruct.data <- left_join(rc_rt.llama3B_instruct.data, frequency.
   rename(frequency="frequency1",
          log_freq="log_freq1")
 
-llama3B_instruct_perplexity <- rc_rt.llama3B_instruct.data %>% 
-  summarize(mean=mean(surprisal),
-            perplexity=exp(mean)) %>% 
-  pull(perplexity)
-llama3B_instruct_perplexity
+# perplexity based on stimuli in this exp
+llama3B_instruct_perplexity <- 4.868213636262412
+# perplexity based on natural stories (futrell et al. 2021) for sanity check
+# llama3B_instruct_perplexity <- 3.824219356984297
 
 rc_rt.llama3B_instruct.summary <- rc_rt.llama3B_instruct.data %>% 
   # filter(!crit %in% c("NONE", "SUBJ", "RC_VERB+3", "RC_VERB+4")) %>% 
@@ -1343,8 +1340,8 @@ pythia1B_crit_delta_ll <- pythia1B_crit_ll - pythia1B_crit_base_ll
 pythia1B_crit_delta_ll
 
 ### All model summary ----
-model <- c("GPT2", "1B", "3B", "1B-Instruct", "3B-Instruct", "pythia1b")
-perplexity <- c(gpt2_perplexity, llama1B_perplexity, llama1B_instruct_perplexity, llama3B_perplexity, llama3B_instruct_perplexity, pythia1B_perplexity)
+model <- c("GPT2", "1B", "1B-Instruct", "3B", "3B-Instruct")
+perplexity <- c(gpt2_perplexity, llama1B_perplexity, llama1B_instruct_perplexity, llama3B_perplexity, llama3B_instruct_perplexity)
 
 #### all data ----
 gam_predictions.data <- bind_rows(
@@ -1398,19 +1395,18 @@ gam_prediction_graph <- ggplot(data=gam_predictions.data %>%
 gam_prediction_graph
 ggsave(gam_prediction_graph, file="../graphs/gam_prediction_graph.pdf", width=8, height=3)
 
-
-gam_delta_ll <- c(gpt2_gam_delta_ll, llama1B_gam_delta_ll, llama1B_instruct_gam_delta_ll, llama3B_gam_delta_ll, llama3B_instruct_gam_delta_ll, pythia1B_gam_delta_ll)
+#### delta ll ----
+gam_delta_ll <- c(gpt2_gam_delta_ll, llama1B_gam_delta_ll, llama1B_instruct_gam_delta_ll, llama3B_gam_delta_ll, llama3B_instruct_gam_delta_ll)
 gam_delta_ll.data <- data.frame(model=model, delta_ll = gam_delta_ll, perplexity = perplexity) %>% 
   arrange(model, delta_ll)
 
-gam_delta_ll_graph <- ggplot(gam_delta_ll.data %>% 
-                               filter(model != "pythia1b"),
+gam_delta_ll_graph <- ggplot(gam_delta_ll.data,
                          aes(x=perplexity,
                              y=delta_ll)) + 
   geom_smooth(method="lm", formula=y~x,se=TRUE, color="black") +
   geom_point(aes(color=model),size=5)+
   labs(x="Perplexity",
-       y="ΔLogLik") 
+       y="ΔLogLik") +
   scale_color_manual(values=cbPalette) +
   theme(legend.text = element_text(size=12), 
         legend.position = "top",
@@ -1422,6 +1418,36 @@ gam_delta_ll_graph <- ggplot(gam_delta_ll.data %>%
 gam_delta_ll_graph  
 ggsave(gam_delta_ll_graph, file="../graphs/gam_delta_ll_graph.pdf", width=8, height=4)
 cor(gam_delta_ll, perplexity)
+
+#### rmse ----
+# order should be gpt2, llama1b, llama1b-instruct, llama3b, llama3b-instruct
+rmse <- c(rmse_gpt2, rmse_llama1B, rmse_llama1B_instruct, rmse_llama3B, rmse_llama3B_instruct)
+gam_rmse.data <- data.frame(model=model, rmse = rmse, perplexity = perplexity) %>% 
+  arrange(model, rmse)
+gam_rmse_summary <- gam_rmse.data %>% 
+  group_by(model, perplexity) %>% 
+  summarize(Mean = mean(rmse),
+            CILow = ci.low(rmse),
+            CIHigh = ci.high(rmse)) %>% 
+  ungroup() %>% 
+  mutate(YMin = Mean-CILow,
+         YMax = Mean+CIHigh)
+gam_rmse_graph <- ggplot(gam_rmse_summary,
+                         aes(x=perplexity,
+                             y=Mean)) +
+  geom_smooth(method="lm", formula=y~x,se=TRUE, color="black") +
+  geom_point(aes(color=model),size=5)+
+  labs(x="Perplexity",
+       y="RMSE") +
+  scale_color_manual(values=cbPalette) +
+  theme(legend.text = element_text(size=12),
+        legend.position = "top",
+        axis.text.x = element_text(size = 12),
+        axis.title.x = element_text(size = 14),
+        axis.text.y = element_text(size = 12),
+        strip.text = element_text(size = 12),
+        axis.title.y = element_text(size = 12))
+gam_rmse_graph
 
 #### cross-validation ----
 gam_delta_ll_cv <- c(delta_ll_gpt2_gam_cv, delta_ll_llama1B_gam_cv, delta_ll_llama1B_instruct_gam_cv, delta_ll_llama3B_gam_cv, delta_ll_llama3B_instruct_gam_cv,delta_ll_pythia1B_gam_cv)
@@ -1963,7 +1989,6 @@ lm_delta_ll_graph <- ggplot(lm_delta_ll.data,
   scale_color_manual(values=cbPalette)
 lm_delta_ll_graph  
 ggsave(lm_delta_ll_graph, file="../graphs/lm_delta_ll_graph.pdf", width=8, height=4)
-
 
 #### cross-validation ----
 lm_delta_ll_cv <- c(delta_ll_gpt2_lm_cv, delta_ll_llama1B_lm_cv, delta_ll_llama1B_instruct_lm_cv, delta_ll_llama3B_lm_cv, delta_ll_llama1B_instruct_lm_cv)

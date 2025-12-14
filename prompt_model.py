@@ -12,8 +12,14 @@ logger = logging.getLogger()
 # client = OpenAI(api_key = os.getenv("OPENAI_API_KEY"))
 client = OpenAI()
 comprehension_info = "You will read a sentence, and your task is to answer the comprehension question about that sentence. "
+# comprehension_2afc_info = "You will read a sentence where there is a missing connective. There are two options for the connective, and the answer options are 1 or 2. Your task is to read the sentence and choose the best option. Please answer with either 1 or 2. "
+comprehension_2afc_info = "You will read a sentence, and there are two options for how to start the next sentence. The answer options are 1 or 2. Your task is to read the sentence and choose the best option. Please answer with either 1 or 2. "
+# comprehension_2afc_info = "You will read a sentence, and there are two options for how to start the next sentence. The answer options are 1 or 2. If neither of the two is a good answer, please respond with 3. Your task is to read the sentence and choose the best option. Please answer with 1, 2, or 3. "
 rc_info = "You will read a sentence where the part after \"who\" is missing. There are two options for how to start the missing part, and the answer options are 1 or 2. You task is to read the sentence and choose the best option. Please answer with either 1 or 2."
 # rc_info = "You will read a sentence with a missing word. There are two options for the missing word, and the answer options are 1 or 2. You task is to read the sentence and choose the best option. Please answer with either 1 or 2."
+pronoun_test_info = "You will read a sentence with a missing word at the beginning, and your task is to fill in the missing word. "
+pronoun_comp_test_info = "You will read two sentences, and your task is to answer the comprehension question about those sentences. "
+pronoun_free_test_info = "You will read a sentence, and your task is to write a follow-up sentence. Please complete the follow-up sentence by avoiding humor."
 pronoun_info = "You will read a sentence, and your task is to write a follow-up sentence. The two people mentioned in the first sentence have the same gender, and the gender is marked with (m) if they are male and with (f) if they are female. Please complete the follow-up sentence by avoiding humor. "
 pronoun_pro_info = "You will read a sentence, and your task is to write a follow-up sentence. The two people mentioned in the first sentence have the same gender, and the gender is marked with (m) if they are male and with (f) if they are female. Please complete the follow-up sentence after the pronoun by avoiding humor. "
 # pronoun_info = "You will read a sentence, and your task is to write a follow-up sentence. The provided sentence will involve two people with the same gender, either both male or both female. Please only write the follow-up sentence by avoiding humor. "
@@ -39,10 +45,11 @@ def get_prediction(prompt, model, seed):
     return generated_answer, raw_probs
 
 # geting response
-system_prompt = "You are a helpful assisant. Your task is to follow the instruction and response to the question."
+system_prompt = "You are a helpful assistant. Your task is to follow the instruction and respond to the question."
+alt_system_prompt = "Your task is to follow the instruction and respond to the question. If you know the answer, let me know what it is. If you don't know the answer, just say so."
 
 # models to test
-# models = ["gpt-3.5-turbo","gpt-4","gpt-4o"]
+# models = ["gpt-3.5-turbo","gpt-4","gpt-4o", "gpt-4o-mini"]
 
 if __name__ == "__main__":
 
@@ -76,6 +83,19 @@ if __name__ == "__main__":
                 else:
                     print("wrong rc prompt!")
             prompt = rc_info + prompt
+        elif "comprehension" in task and "why" in task:
+            prompt = comprehension_info + row.prompt
+            system_prompt = alt_system_prompt
+        elif "comprehension" in task and "and_so" in task:
+            prompt = comprehension_2afc_info + row.prompt
+        elif  "comprehension" in task:
+            prompt = comprehension_info + row.prompt
+        elif "comp" in task and "test" in task:
+            prompt = pronoun_comp_test_info + row.prompt
+        elif "free" in task and "test" in task:
+            prompt = pronoun_free_test_info + row.prompt
+        elif "test" in task and "pronoun" in task:
+            prompt = pronoun_test_info + row.prompt
         elif "pronoun" in task:
             if "pronoun_free" in task:
                 prompt = pronoun_info + row.prompt
@@ -84,8 +104,6 @@ if __name__ == "__main__":
             else: 
                 print("wrong pronoun prompt!")
                 break
-        elif  "comprehension" in task:
-            prompt = comprehension_info + row.prompt
         else:
             print("wrong task")
             break

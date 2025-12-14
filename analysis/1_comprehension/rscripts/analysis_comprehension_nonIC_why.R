@@ -86,9 +86,9 @@ comprehension_graph <- ggplot(comprehension_means,
     position = "dodge",
     stat="identity",
     pattern_angle = 45,
-    pattern_spacing = 0.02,
+    pattern_spacing = 0.1,
     pattern_fill="black",
-    pattern_alpha=0.4,
+    pattern_alpha=0.6,
     alpha=0.7) +
   scale_pattern_manual(values=c(exp = "stripe", nonexp = "none"),
                        # guide="none",
@@ -277,11 +277,11 @@ fixef_data %>%
             sum_interaction = sum(interaction>0),
             proportion_interaction = sum_interaction/n())
 
-
-# 4. Exploratory type analysis ----
+# 4.type analysis ----
 comprehension_response_type <- comprehension_all_data %>% 
+  filter(annotated_answer != "else") %>% 
   mutate(error_type = if_else(intended=="yes", "intended_infer", error_type)) %>% 
-  mutate(error_type = if_else(annotated_answer == "else", "others", error_type)) %>%
+  # mutate(error_type = if_else(annotated_answer == "else", "others", error_type)) %>%
   mutate(error_type = if_else(grepl("extended inference", error_type), "extended inference", error_type)) %>% 
   pivot_wider(names_from = error_type, values_from = annotated_answer) %>% 
   rename(extended = "extended inference",
@@ -290,11 +290,10 @@ comprehension_response_type <- comprehension_all_data %>%
   mutate(intended_infer = if_else(is.na(intended_infer), 0, 1),
          extended = if_else(is.na(extended), 0, 1),
          rc = if_else(is.na(rc), 0, 1),
-         idk = if_else(is.na(idk), 0, 1),
-         others = if_else(is.na(others), 0, 1))
+         idk = if_else(is.na(idk), 0, 1))
 
 comprehension_response_type <- comprehension_response_type %>% 
-  pivot_longer(cols=c(intended_infer, extended, rc, idk, others),
+  pivot_longer(cols=c(intended_infer, extended, rc, idk),
                values_to = "error_exist",
                names_to = "error_type")
 
@@ -308,7 +307,7 @@ comprehension_response_type_mean <- comprehension_response_type %>%
          YMax=Mean+CIHigh) %>% 
   mutate(error_type = if_else(error_type == "intended_infer", "intended", error_type),
          condition = paste(verb_type, "+", rc_type)) %>% 
-  mutate(error_type = factor(error_type, levels=c("intended", "rc", "extended", "idk", "others"))) 
+  mutate(error_type = factor(error_type, levels=c("intended", "rc", "extended", "idk"))) 
 model_names <- list(
   "llama1B_instruct" = "1B_instruct",
   "llama3B_instruct" = "3B_instruct",
@@ -325,8 +324,7 @@ error_type_names <- list(
   "intended" = "intended\ninference",
   "rc" = "rc content",
   "extended" = "extended\ninference",
-  "idk" = "I don't know",
-  "others" = "others"
+  "idk" = "I don't know"
 )
 
 error_type_labeller <- function(variable,value){
@@ -341,7 +339,7 @@ answer_type_graph <- ggplot(comprehension_response_type_mean,
     position = "dodge",
     stat="identity",
     pattern_angle = 45,
-    pattern_spacing = 0.02,
+    pattern_spacing = 0.1,
     pattern_fill="black",
     pattern_alpha=0.6,
     alpha=0.7) +
@@ -350,7 +348,7 @@ answer_type_graph <- ggplot(comprehension_response_type_mean,
                 width=.2, 
                 show.legend = FALSE) +
   theme_bw() +
-  scale_fill_brewer(palette = "Dark2") +
+  scale_fill_brewer(palette = "Dark2", name="Verb Type") +
   scale_pattern_manual(values=c(exp = "stripe", nonexp = "none"),
                        name="RC Type") +
   scale_x_discrete(labels = NULL, breaks=NULL) +

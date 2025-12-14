@@ -8,6 +8,7 @@ library(ggsignif)
 library(tidytext)
 library(RColorBrewer)
 library(stringr)
+library(brms)
 
 theme_set(theme_bw())
 # color-blind-friendly palette
@@ -104,36 +105,81 @@ rc_alt_graph <- ggplot(rc_alt_means,
        x = "Verb Type") +
   facet_wrap(. ~ model) +
   scale_fill_brewer(palette = "Dark2") +
-  theme(legend.position="none") +
+  theme(legend.position="none",
+        strip.text.x = element_text(size = 12),
+        axis.title.x = element_text(size=14),
+        axis.text.x = element_text(size = 12),
+        axis.title.y = element_text(size=14),
+        axis.text.y = element_text(size = 12)) +
   ylim(0,1)
 rc_alt_graph
-ggsave(rc_alt_graph, file="../graphs/rc_alt_pilot_6.pdf", width=7, height=4)
+ggsave(rc_alt_graph, file="../graphs/rc_alt_6.pdf", width=7, height=4)
 
 
 # 3. Statistical analysis ----
 ## gpt-3.5-turbo ----
 rc_alt.gpt35.data <- rc_alt.gpt35.data %>% 
   mutate(sentence_type = fct_relevel(as.factor(sentence_type)),
-         attachment = as.factor(attachment))
-gpt35 <- glmer(attachment ~ sentence_type + (1|sent_id),
+         attachment = as.factor(attachment)) %>% 
+  rename(verb_type="sentence_type")
+gpt35 <- glmer(attachment ~ verb_type + (1|item_id),
                family = "binomial",
                data=rc_alt.gpt35.data)
 summary(gpt35)
 
+gpt35_bayesian_default_prior <- brm(attachment ~ verb_type + (1|item_id),
+                                    family="bernoulli",
+                                   data=rc_alt.gpt35.data,
+                                   iter=8000,
+                                   warmup = 4000,
+                                   chains=4,
+                                   cores=4,
+                                   control=list(max_treedepth = 15, adapt_delta = 0.99),
+                                   file="../cache/gpt35_default_prior",
+                                   seed=1024)
+summary(gpt35_bayesian_default_prior)
+
 ## gpt-4 ----
 rc_alt.gpt4.data <- rc_alt.gpt4.data %>% 
   mutate(sentence_type = fct_relevel(as.factor(sentence_type)),
-         attachment = as.factor(attachment))
-gpt4 <- glmer(attachment ~ sentence_type + (1|sent_id),
+         attachment = as.factor(attachment)) %>% 
+  rename(verb_type = "sentence_type")
+gpt4 <- glmer(attachment ~ sentence_type + (1|item_id),
                family = "binomial",
                data=rc_alt.gpt4.data)
 summary(gpt4)
 
+gpt4_bayesian_default_prior <- brm(attachment ~ verb_type + (1|item_id),
+                                    family="bernoulli",
+                                    data=rc_alt.gpt4.data,
+                                    iter=8000,
+                                    warmup = 4000,
+                                    chains=4,
+                                    cores=4,
+                                    control=list(max_treedepth = 15, adapt_delta = 0.99),
+                                    file="../cache/gpt4_default_prior",
+                                    seed=1024)
+summary(gpt4_bayesian_default_prior)
+
 ## gpt-4o ----
 rc_alt.gpt4o.data <- rc_alt.gpt4o.data %>% 
   mutate(sentence_type = fct_relevel(as.factor(sentence_type)),
-         attachment = as.factor(attachment))
-gpt4o <- glmer(attachment ~ sentence_type + (1|sent_id),
+         attachment = as.factor(attachment)) %>% 
+  rename(verb_type = "sentence_type")
+
+gpt4o <- glmer(attachment ~ verb_type + (1|item_id),
               family = "binomial",
               data=rc_alt.gpt4o.data)
 summary(gpt4o)
+
+gpt4o_bayesian_default_prior <- brm(attachment ~ verb_type + (1|item_id),
+                                   family="bernoulli",
+                                   data=rc_alt.gpt4o.data,
+                                   iter=8000,
+                                   warmup = 4000,
+                                   chains=4,
+                                   cores=4,
+                                   control=list(max_treedepth = 15, adapt_delta = 0.99),
+                                   file="../cache/gpt4o_default_prior",
+                                   seed=1024)
+summary(gpt4o_bayesian_default_prior)
